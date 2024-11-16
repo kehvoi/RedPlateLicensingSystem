@@ -7,8 +7,4 @@ abstract class Person{
 	protected Address curAddr;
 	protected String emailAddr;
 	protected String contactNum;
-	
-	//Default Constructor 
-	
-
 }
