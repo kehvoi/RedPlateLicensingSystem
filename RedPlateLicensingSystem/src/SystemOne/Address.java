@@ -69,10 +69,15 @@ public class Address
 		this.parish = parish;
 	}
 	
-	public void Display()
-	{
-		System.out.println("The Address is 	:"+ streetNum + "," + streetName + "," + community + "," + parish);
-	}
+	public String toString()
+			{
+				String output;
+				
+				output = "The Address is 	:"+ streetNum + "," + streetName + "," + community + "," + parish;
+				System.out.println(output);
+				
+				return output;
+			}
 	
 	
 	
