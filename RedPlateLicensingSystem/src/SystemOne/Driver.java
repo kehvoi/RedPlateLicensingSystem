@@ -30,5 +30,12 @@ public class Driver extends User
 		System.out.println("The gender of driver is :" + gender);
 	}
 
+	public String toCSV() 
+	 {
+	        return name.getFirstName() + "," + name.getLastName() + "," + dob + "," + trn + "," +
+	               addr.getStreetNum() + "," + addr.getStreetName() + "," + addr.getCommunity() + "," +
+	               addr.getParish() + "," + contactNum + "," + gender;
+	 }
+
 	
 }
