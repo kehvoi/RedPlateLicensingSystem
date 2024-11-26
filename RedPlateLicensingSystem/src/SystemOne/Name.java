@@ -1,10 +1,9 @@
 package SystemOne;
 
-public class Name 
-{
+public class Name {
+
 	//Attributes
 	private String firstName;
-	private String middleName;
 	private String lastName;
 	
 	//Default Constructor
@@ -12,16 +11,14 @@ public class Name
 	public Name()
 	{
 		firstName = "";
-		middleName = "";
 		lastName = "";
 	}
 	
 	//Primary Constructor
 	
-	public Name(String firstName, String middleName, String lastName)
+	public Name(String firstName,String lastName)
 	{
 		this.firstName = firstName;
-		this.middleName = middleName;
 		this.lastName = lastName;
 	}
 	
@@ -30,7 +27,6 @@ public class Name
 	public Name(Name na)
 	{
 		this.firstName = na.firstName;
-		this.middleName = na.middleName;
 		this.lastName = na.lastName;
 	}
 	
@@ -44,13 +40,6 @@ public class Name
 		this.firstName = firstName;
 	}
 
-	public String getMiddleName() {
-		return middleName;
-	}
-
-	public void setMiddleName(String middleName) {
-		this.middleName = middleName;
-	}
 
 	public String getLastName() {
 		return lastName;
@@ -62,9 +51,13 @@ public class Name
 	
 	
 
-	public void Display()
+	public String toString()
 	{
-		System.out.println("The person name is  :" + firstName + " " + middleName + " " + lastName);
+		String output;
+		
+		output = "The fullname is :" + firstName + " " + lastName;
+		System.out.println(output);
+		return output;
 	}
 
 }
