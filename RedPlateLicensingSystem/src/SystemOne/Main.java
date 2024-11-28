@@ -48,7 +48,10 @@ public class Main {
 		Drivers.add(driver1);
 		Drivers.add(driver2);
 		Drivers.add(driver3);
-    	//Drivers.add(driver(i-1));
+    	
+		
+		//ArrayList<Ticket> Tickets = new ArrayList<>();
+		
     	
     	
     	
@@ -66,7 +69,7 @@ public class Main {
         boolean state = true;
         
         //Loads in the default users before the while loop starts
-        writeDriverRecord("driver_records.csv", Drivers);// Suppose to be in system 1
+        DefaultDrivers("driver_records.csv", Drivers);// Suppose to be in system 1
         
         try 
         {
@@ -153,7 +156,7 @@ public class Main {
             System.out.println("Thank you for your business. Have a nice day");
             
             
-        }
+        }// end of public static void main
         
         
   
@@ -163,9 +166,45 @@ public class Main {
     
     
     
+    //Methods for Drivers
     
-    
+  //Method to Load Default Driver Records
+    public static void DefaultDrivers(String filePath, ArrayList<Driver> parameterList) {
+        File file = new File(filePath);
 
+        // If the file doesn't exist, create it and add default drivers
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+                System.out.println("Default Users Successfully Loaded");
+                
+               // Write the drivers to the file
+            try (FileWriter writer = new FileWriter(file, true)) {
+                for (Driver driver : parameterList) {
+                    writer.write(driver.toCSV());  // Get the CSV string and write it to the file
+                    writer.append("\n");  // Append a newline after each driver's record
+                }
+              } //end second try
+              catch (IOException e) {
+                System.out.println("An error occurred while saving the driver info.");
+                e.printStackTrace();
+              }//end catch  
+                
+                
+                
+            }//endif
+
+           
+        }//end first try 
+        catch (IOException e) {
+            System.out.println("An error occurred while creating the file.");
+            e.printStackTrace();
+        }
+    }// end DefaultDrivers method
+    
+    
+    //Methods for Ticket Class
+    
     // Method to load the ticket number from the file
 public static int LoadTicketNum(String filepath) {
         // Create a File object
@@ -212,26 +251,13 @@ public static int LoadTicketNum(String filepath) {
     }
     
     
-    //Method to Write Driver Records
     
-    public static void writeDriverRecord(String filePath2, ArrayList<Driver> parameterList) {
-        try (FileWriter writer = new FileWriter(filePath2)) {
-            for (Driver driver : parameterList) {
-                // Write the driver's CSV data to the file
-                writer.write(driver.toCSV());  // Get the CSV string and write it to the file
-                writer.append("\n");  // Append a newline after each driver's record
-            }
-        } catch (IOException e) {
-            System.out.println("An error occurred while saving the driver info.");
-            e.printStackTrace();
-        }
-    }
+   
     
     
     
     
-    
-}//end of main
+}//end of Class Main
 
 
 
@@ -239,36 +265,3 @@ public static int LoadTicketNum(String filepath) {
 
 
 
-/*
-public static Driver DefaultDriver(String filepath) {
-    // Create a File object
-    File file = new File(filepath);
-
-    // Check if the file exists
-    if (file.exists()) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
-            // Read the file content (ticket number is expected to be on a single line)
-            String line = reader.readLine();
-            if (line != null) {
-                return Integer.parseInt(line); // Return the ticket number from the file
-            }
-        } catch (IOException e) {
-            System.out.println("An error occurred while reading the file.");
-            e.printStackTrace();
-        }
-    } else {
-        // If file doesn't exist, create it and initialize the ticket number to 0
-        try {
-            if (file.createNewFile()) {
-                System.out.println("File created: " + file.getName());
-                // Write initial ticket number (0) to the file
-                SaveTicketNum(filepath, 0);
-            }
-        } catch (IOException e) {
-            System.out.println("An error occurred while creating the file.");
-            e.printStackTrace();
-        }
-    }
-
-    return 0; // Return default value if the file was not found or read fails
-}*/
