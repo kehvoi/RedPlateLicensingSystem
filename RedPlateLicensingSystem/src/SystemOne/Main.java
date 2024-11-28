@@ -1,4 +1,4 @@
-package SystemOne;
+package System;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -29,6 +29,9 @@ public class Main {
     public static int offenseCodeInput;
     public static int fineAmtInput;
     public static int trnInput;
+    public static boolean ticketPayStatusInput = false;
+    public static LocalDate today = LocalDate.now();
+    public static LocalDate weeks = today.plusWeeks(3);
 
     public static void main(String[] args) 
     {
@@ -121,14 +124,15 @@ public class Main {
                 		            		System.out.println("That offenseCode is not available. Please enter another one.");
                 		            		offenseCodeInput = scan.nextInt();
                 		            }
-                		            System.out.println("Successful input");
+                		            System.out.println("Successful input. I will add tickets in the next update! :)");
+                		            
+                		            ArrayList<Ticket> NewTicket = new ArrayList<>();
+                		            
+                		            //Ticket tic = new Ticket(trnInput,ticketNum, today,weeks,offenseCodeInput, offenseDesc, ticketPayStatusInput, fineAmt, totalUnpaidTic, totalFine);
+                		            //NewTicket.add(tic);
                 		            
                 		            
-                		            
-                		            //Ticket newtic= new Ticket ();
-                		            //newtic.GenerateFine(offenseCodeInput,fineAmt);
-                		            
-                		            
+                		  
                 		            
                 		            
                 		        } else {
