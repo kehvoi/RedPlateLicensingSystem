@@ -4,10 +4,10 @@ import java.time.LocalDate;
 
 public abstract class User 
 {
-
+		protected int trn;
 		protected Name name;
 		protected LocalDate dob;
-		protected int trn;
+		
 		protected Address addr;
 		protected String email;
 		protected String contactNum;
@@ -15,12 +15,13 @@ public abstract class User
 		
 		
 		//Primary Constructor
-		public User(Name name, LocalDate dob, int trn, Address addr, String email, String contactNum,
+		public User(int trn,Name name, LocalDate dob, Address addr, String email, String contactNum,
 				String gender) 
 		{
+			this.trn = trn;
 			this.name = name;
 			this.dob = dob;
-			this.trn = trn;
+			
 			this.addr = addr;
 			this.email = email;
 			this.contactNum = contactNum;
@@ -32,9 +33,10 @@ public abstract class User
 		//Copy Constructor
 		public User(User use) 
 		{
+			this.trn = use.trn;
 			this.name = use.name;
 			this.dob = use.dob;
-			this.trn = use.trn;
+			
 			this.addr = use.addr;
 			this.email = use.email;
 			this.contactNum = use.contactNum;
