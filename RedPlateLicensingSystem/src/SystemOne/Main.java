@@ -7,7 +7,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
@@ -24,6 +26,9 @@ public class Main {
     public static String ppvLicense;
     public static int option;
     public static int license;
+    public static int offenseCodeInput;
+    public static int fineAmtInput;
+    public static int trnInput;
 
     public static void main(String[] args) 
     {
@@ -33,17 +38,17 @@ public class Main {
 		//Default User 1
 		Name d1 = new Name("John", "Brown");
 		Address a1 = new Address(19,"Maldave Avenue","Bellford","Kingston");
-		Driver driver1 = new Driver(d1, LocalDate.parse("2000-05-05"), 100000001, a1, "john.brown@gmail.com", "8768403526", "Male");
+		Driver driver1 = new Driver(123456789,d1, LocalDate.parse("2000-05-05"),a1, "john.brown@gmail.com", "8768403526", "Male");
 
 		//Default User 2
 		Name d2 = new Name("Mary", "Anderson");
-		Address a2 = new Address(12, "Redwood Lane", "Sunnydale", "St. Andrew");
-		Driver driver2 = new Driver(d2, LocalDate.parse("1995-08-15"), 100000002, a2, "mary.anderson@gmail.com", "8761234567", "Female");
+		Address a2 = new Address(12, "Redwood Lane", "Sunnydale", "St.Andrew");
+		Driver driver2 = new Driver(987654321, d2, LocalDate.parse("1995-08-15"),a2, "mary.anderson@gmail.com", "8761234567", "Female");
 
 		//Default User 3
 		Name d3 = new Name("Sashana","Blackwood");
 		Address a3 = new Address(88,"Stockforth Road","BellRoad","St.Thomas");
-		Driver driver3 = new Driver(d3, LocalDate.parse("2001-08-05"), 100000003, a3, "sashana.blackwood@gmail.com", "8767252731", "Female");
+		Driver driver3 = new Driver(100000000,d3, LocalDate.parse("2001-08-05"),a3, "sashana.blackwood@gmail.com", "8767252731", "Female");
 
 		Drivers.add(driver1);
 		Drivers.add(driver2);
@@ -55,7 +60,7 @@ public class Main {
     	
     	
     	
-    	
+    	String filePath2 = "driver_records.csv";
         String filePath = "ticketCount.txt";
 
         // Load ticket number from the file
@@ -65,7 +70,7 @@ public class Main {
         Scanner scan = new Scanner(System.in);
         String adminPass = "ABC123";
         String passcode;
-        int trnInput;
+        
         boolean state = true;
         
         //Loads in the default users before the while loop starts
@@ -97,18 +102,43 @@ public class Main {
             					+ "\n3 - View current ticketing information"
             					+ "\n4 - Check status of a driver in the system"
             					+ "\n5 - View all outstanding tickets (sorted by parish)"
-            					+ "\nEnter an option");
+            					+ "\nEnter an option:");
             			
             			option = scan.nextInt();
             			if (option == 1)
             			{
             				System.out.println("Please enter offender trn: ");
             				trnInput = scan.nextInt();
-            				//if (trnInput == searchTRN(trn))
-            				//{
-            					System.out.println("Please enter offenseCode");
-            				
-            				//}
+            				if (String.valueOf(trnInput).length() == 9)
+            				{
+            					String result = searchDriverByTrn(filePath2, trnInput);
+                				if (result != null) {
+                		            System.out.println("Found driver record");
+                		            System.out.println("Please enter offense Code to apply to offender:");
+                		            offenseCodeInput = scan.nextInt();
+                		            while(offenseCodeInput <=0  || offenseCodeInput > 7)
+                		            {
+                		            		System.out.println("That offenseCode is not available. Please enter another one.");
+                		            		offenseCodeInput = scan.nextInt();
+                		            }
+                		            System.out.println("Successful input");
+                		            
+                		            
+                		            
+                		            //Ticket newtic= new Ticket ();
+                		            //newtic.GenerateFine(offenseCodeInput,fineAmt);
+                		            
+                		            
+                		            
+                		            
+                		        } else {
+                		            System.out.println("Driver not found with TRN");
+                		        }  
+            				}
+            				else
+            				{
+            				  System.out.println("Invalid TRN. TRN must contain 9 digits");
+            				}
             				
             				
             				
@@ -203,6 +233,37 @@ public class Main {
     }// end DefaultDrivers method
     
     
+    //Search TRN Method
+    
+    public static String searchDriverByTrn(String filePath, int searchTrn) {
+        Map<Integer, String> index = new HashMap<>();
+        
+        // Read the file and build the index
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                try {
+                    int trn = Integer.parseInt(parts[0].trim());
+                    index.put(trn, line); // Map TRN to the full line
+                } catch (NumberFormatException e) {
+                    // Skip malformed lines where TRN is not a valid integer
+                    System.out.println("Skipping invalid line");
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+            return null; // Return null if there's an issue with file reading
+        }
+
+        // Search for the TRN in the index
+        return index.get(searchTrn); // Return the matching line, or null if not found
+    }
+    
+    
+    
+    
+    
     //Methods for Ticket Class
     
     // Method to load the ticket number from the file
@@ -249,6 +310,9 @@ public static int LoadTicketNum(String filepath) {
             e.printStackTrace();
         }
     }
+    
+    //Add Ticket Method
+    
     
     
     
