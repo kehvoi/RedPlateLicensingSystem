@@ -1,4 +1,4 @@
-package SystemOne;
+package System;
 
 import java.time.LocalDate;
 
@@ -13,6 +13,17 @@ public abstract class User
 		protected String contactNum;
 		protected String gender;
 		
+		//Default Constructor
+		public User()
+		{
+			trn = 0;
+			name = new Name();
+			dob = LocalDate.now();
+			addr = new Address();
+			email = "";
+			contactNum = "";
+			gender = "Other";
+		}
 		
 		//Primary Constructor
 		public User(int trn,Name name, LocalDate dob, Address addr, String email, String contactNum,
