@@ -1,30 +1,32 @@
-package SystemOne;
+package System;
 
 import java.time.LocalDate;
 
 public class Ticket {
 	
 	//Ticket Attributes
-		private int ticketNum;
 		private int trn;
+		private int ticketNum;
+		
 		private LocalDate ticketIssueDate;
 		private LocalDate ticketDueDate;
 		private String offenseCode;
 		private String offenseDesc;
 		private boolean ticketPayStatus;
-		private float fineAmt;
+		private int fineAmt;
 		
 		private LocalDate courtDate;
 		private Address courtLocation;
-		private float totalUnpaidTic;
-		private float totalFineAmt;
+		private int totalUnpaidTic;
+		private int totalFineAmt;
 		private boolean warrant;
 			
 		//Default Constructor
 		public Ticket()
 		{
-			ticketNum = 0;
 			trn = 0;
+			ticketNum = 0;
+			
 			ticketIssueDate = LocalDate.now();
 	    	ticketDueDate =  ticketIssueDate.plusWeeks(3);
 			offenseCode = "";
@@ -40,12 +42,13 @@ public class Ticket {
 		}
 		
 		//Primary Constructor
-		public Ticket(int ticketNum, int trn, LocalDate ticketIssueDate, LocalDate ticketDueDate, String offenseCode, 
-				String offenseDesc, Boolean ticketPayStatus, Boolean warrantStatus,float fineAmt, LocalDate courtDate,
-				Address courtLocation, float totalUnpaidTic, float totalFineAmt, boolean warrant)
+		public Ticket(int trn,int ticketNum,  LocalDate ticketIssueDate, LocalDate ticketDueDate, String offenseCode, 
+				String offenseDesc, Boolean ticketPayStatus, Boolean warrantStatus,int fineAmt, LocalDate courtDate,
+				Address courtLocation, int totalUnpaidTic, int totalFineAmt, boolean warrant)
 		{
-			this.ticketNum = ticketNum;
 			this.trn = trn;
+			this.ticketNum = ticketNum;
+			
 			this.ticketIssueDate = ticketIssueDate;
 			this.ticketDueDate = ticketDueDate;
 			this.offenseCode = offenseCode;
@@ -63,8 +66,9 @@ public class Ticket {
 		//Copy Constructor
 		public Ticket(Ticket tic)
 		{
-			this.ticketNum = tic.ticketNum;
 			this.trn = tic.trn;
+			this.ticketNum = tic.ticketNum;
+			
 			this.ticketIssueDate = tic.ticketIssueDate;
 			this.ticketDueDate = tic.ticketDueDate;
 			this.offenseCode = tic.offenseCode;
@@ -139,11 +143,11 @@ public class Ticket {
 			this.ticketPayStatus = ticketPayStatus;
 		}
 
-		public float getFineAmt() {
+		public int getFineAmt() {
 			return fineAmt;
 		}
 
-		public void setFineAmt(float fineAmt) {
+		public void setFineAmt(int fineAmt) {
 			this.fineAmt = fineAmt;
 		}
 
@@ -167,7 +171,7 @@ public class Ticket {
 			return totalUnpaidTic;
 		}
 
-		public void setTotalUnpaidTic(float totalUnpaidTic) {
+		public void setTotalUnpaidTic(int totalUnpaidTic) {
 			this.totalUnpaidTic = totalUnpaidTic;
 		}
 
@@ -175,7 +179,7 @@ public class Ticket {
 			return totalFineAmt;
 		}
 
-		public void setTotalFineAmt(float totalFineAmt) {
+		public void setTotalFineAmt(int totalFineAmt) {
 			this.totalFineAmt = totalFineAmt;
 		}
 
@@ -187,6 +191,50 @@ public class Ticket {
 			this.warrant = warrant;
 		}
 		
+		
+		public int GenerateFine (int offenseCode, int fineAmt)
+		{
+			switch (offenseCode)
+			{
+			case 1:
+				return fineAmt = 15000;
+			case 2:
+				return fineAmt = 30000;
+			case 3:
+				return fineAmt = 5000;
+			case 4:
+				return fineAmt = 30000;
+			case 5:
+				return fineAmt = 25000;
+			case 6:
+				return fineAmt = 11000;
+			case 7:
+				return fineAmt = 175000;
+			}
+			return fineAmt = 0;
+		}
+		
+		public String GenerateOffenseDesc(int offenseCode, String offenseDesc)
+		{
+			switch (offenseCode)
+			{
+			case 1:
+				return offenseDesc = "Aid And Abet No Driver’s Licence or Permit";
+			case 2:
+				return offenseDesc = "Aid And Abet Operating Motor Vehicle...";
+			case 3:
+				return offenseDesc = "Body Protruding";
+			case 4:
+				return offenseDesc = "Breach of special permit";
+			case 5:
+				return offenseDesc = "Careless Driving Causing Collision";
+			case 6:
+				return offenseDesc = "Careless Driving Where No Collision Occurs";
+			case 7:
+				return offenseDesc = "Carrying dangerous goods without the transport....";
+			}
+			return offenseDesc = "";
+		}
 		
 		public void CheckTicketDate(LocalDate ticketIssueDate, LocalDate ticketDueDate)
 		{
@@ -205,8 +253,9 @@ public class Ticket {
 		public String toString()
 		{
 			String output;
-			output = "The ticket number is : " + ticketNum;
-			output += "\nThe trn is :" +trn;
+			output = "\nThe trn is :" +trn;
+			output += "The ticket number is : " + ticketNum;
+			
 			output += "\nThe ticket was issued on : " + ticketIssueDate;
 			output += "\nThe ticket due date is : " + ticketDueDate;
 			output += "\nThe ticket offense code is : " + offenseCode;
@@ -225,15 +274,26 @@ public class Ticket {
 		}
 		
 		
-		
+		 
 		
 		public static void main(String[] args)
 		{
-			Ticket newtic = new Ticket();
+			Ticket newtic = new Ticket();/*
 			newtic.toString();
 			System.out.println("\n");
 			newtic.CheckTicketDate(newtic.getTicketIssueDate(), newtic.ticketDueDate);
-			System.out.println(newtic.getTicketIssueDate() + "and" +  newtic.ticketDueDate);
+			System.out.println(newtic.getTicketIssueDate() + "and" +  newtic.ticketDueDate);*/
+			
+			
+			int offenseCode;
+			int fineAmt = 0;
+			String offenseDesc = "";
+			for (int i = 1; i <= 7; i++)
+			{
+				offenseCode = i;
+				//System.out.println(newtic.GenerateFine(offenseCode,fineAmt));
+				System.out.println(newtic.GenerateOffenseDesc(offenseCode,offenseDesc));
+			}
 		}
 
 }
