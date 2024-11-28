@@ -10,9 +10,9 @@ public class Ticket {
 		
 		private LocalDate ticketIssueDate;
 		private LocalDate ticketDueDate;
-		private String offenseCode;
+		private int offenseCode;
 		private String offenseDesc;
-		private boolean ticketPayStatus;
+		private String ticketPayStatus;
 		private int fineAmt;
 		
 		private LocalDate courtDate;
@@ -29,9 +29,9 @@ public class Ticket {
 			
 			ticketIssueDate = LocalDate.now();
 	    	ticketDueDate =  ticketIssueDate.plusWeeks(3);
-			offenseCode = "";
+			offenseCode = 0;
 			offenseDesc = "";
-			ticketPayStatus = false;
+			ticketPayStatus = "";
 			fineAmt = 0;
 			
 			courtDate = ticketDueDate.plusWeeks(1);
@@ -42,8 +42,9 @@ public class Ticket {
 		}
 		
 		//Primary Constructor
-		public Ticket(int trn,int ticketNum,  LocalDate ticketIssueDate, LocalDate ticketDueDate, String offenseCode, 
-				String offenseDesc, Boolean ticketPayStatus, Boolean warrantStatus,int fineAmt, LocalDate courtDate,
+		public Ticket(int trn,int ticketNum,  LocalDate ticketIssueDate, LocalDate ticketDueDate,
+				int offenseCode, 
+				String offenseDesc, String ticketPayStatus,int fineAmt, LocalDate courtDate,
 				Address courtLocation, int totalUnpaidTic, int totalFineAmt, boolean warrant)
 		{
 			this.trn = trn;
@@ -85,22 +86,21 @@ public class Ticket {
 		}
 		
 		//Generating Getters and Setters
+
+		public int getTrn() {
+			return trn;
+		}
+
+		public void setTrn(int trn) {
+			this.trn = trn;
+		}
+
 		public int getTicketNum() {
 			return ticketNum;
 		}
 
 		public void setTicketNum(int ticketNum) {
 			this.ticketNum = ticketNum;
-		}
-		
-		public int getTrn()
-		{
-			return trn;
-		}
-		
-		public void setTrn(int trn)
-		{
-			this.trn = trn;
 		}
 
 		public LocalDate getTicketIssueDate() {
@@ -119,11 +119,11 @@ public class Ticket {
 			this.ticketDueDate = ticketDueDate;
 		}
 
-		public String getOffenseCode() {
+		public int getOffenseCode() {
 			return offenseCode;
 		}
 
-		public void setOffenseCode(String offenseCode) {
+		public void setOffenseCode(int offenseCode) {
 			this.offenseCode = offenseCode;
 		}
 
@@ -135,11 +135,11 @@ public class Ticket {
 			this.offenseDesc = offenseDesc;
 		}
 
-		public boolean isTicketPayStatus() {
+		public String getTicketPayStatus() {
 			return ticketPayStatus;
 		}
 
-		public void setTicketPayStatus(boolean ticketPayStatus) {
+		public void setTicketPayStatus(String ticketPayStatus) {
 			this.ticketPayStatus = ticketPayStatus;
 		}
 
@@ -167,7 +167,7 @@ public class Ticket {
 			this.courtLocation = courtLocation;
 		}
 
-		public float getTotalUnpaidTic() {
+		public int getTotalUnpaidTic() {
 			return totalUnpaidTic;
 		}
 
@@ -175,7 +175,7 @@ public class Ticket {
 			this.totalUnpaidTic = totalUnpaidTic;
 		}
 
-		public float getTotalFineAmt() {
+		public int getTotalFineAmt() {
 			return totalFineAmt;
 		}
 
@@ -214,6 +214,7 @@ public class Ticket {
 			return fineAmt = 0;
 		}
 		
+
 		public String GenerateOffenseDesc(int offenseCode, String offenseDesc)
 		{
 			switch (offenseCode)
@@ -240,11 +241,25 @@ public class Ticket {
 		{
 			if (ticketDueDate.isBefore(LocalDate.now())) {
 	            System.out.println("\nThe ticket has expired.");
+	            //Update the record to reflect court stuff
+	            //Update the ticketStatDesc in the ticket class
 	        } else {
 	            System.out.println("\nThe ticket is still valid.");
 	        }
 		}
 		
+		public void CheckCourtDate(LocalDate courtDate,boolean warranty)
+		{
+			if (courtDate.isBefore(LocalDate.now())) 
+			{
+				System.out.println("Warranty has been sent out for the arrest of driver");
+				warranty = true;
+			}
+			else
+			{
+				System.out.println("Court Date has not passed yet.");
+			}
+		}
 		
 		
 		//toString display method
@@ -264,7 +279,7 @@ public class Ticket {
 			output += "\nThe fine amount is :" + fineAmt;
 			
 			output += "\nThe court date is : " + courtDate;
-			output += "\nThe court location is :" + courtLocation.getStreetNum() + "," + courtLocation.getStreetName() + "," + courtLocation.getCommunity() + "," + courtLocation.getParish();
+			output += "\nThe court location is :" + courtLocation.getStreetNum() + "," + courtLocation.getStreetName() + "," + courtLocation.getParish();
 			output += "\nThe total unpaid ticket is :" + totalUnpaidTic;
 			output += "\nThe total fine amount is :" + totalFineAmt;
 			output += "\nWas a warrant issued? : " + warrant;
@@ -273,7 +288,25 @@ public class Ticket {
 			return output;
 		}
 		
+		public String toCSV()
+		{
+			return trn + "," + ticketNum + "," + ticketIssueDate + "," + ticketDueDate+ "," +  offenseCode+ "," + offenseDesc + 
+					"," +  ticketPayStatus + "," +fineAmt + "," + courtDate + "," 
+					+ courtLocation.getStreetNum() + "," + courtLocation.getStreetName() + "," + courtLocation.getParish() + "," + totalUnpaidTic + "," + totalFineAmt + "," + warrant ;
+		}
 		
+		public void DisplayTicket()
+		{
+			System.out.println("The ticket number is : " + ticketNum);
+			System.out.println("The ticket was issued on : " + ticketIssueDate);
+			System.out.println("The ticket due date is : " + ticketDueDate);
+			System.out.println("The ticket offense code is : " + offenseCode);
+			System.out.println("The ticket offense description is : " + offenseDesc);
+			System.out.println("The fine amount is :" + fineAmt);
+			System.out.println("Was the ticket paid? : " + ticketPayStatus);
+		}
+		
+		 
 		 
 		
 		public static void main(String[] args)
@@ -286,12 +319,12 @@ public class Ticket {
 			
 			
 			int offenseCode;
-			int fineAmt = 0;
+			int fineAmtInput = 0;
 			String offenseDesc = "";
 			for (int i = 1; i <= 7; i++)
 			{
 				offenseCode = i;
-				//System.out.println(newtic.GenerateFine(offenseCode,fineAmt));
+				//System.out.println(newtic.GenerateFine(offenseCode,fineAmtInput));
 				System.out.println(newtic.GenerateOffenseDesc(offenseCode,offenseDesc));
 			}
 		}
