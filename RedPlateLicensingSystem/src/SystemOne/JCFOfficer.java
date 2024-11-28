@@ -11,7 +11,7 @@ public class JCFOfficer extends User
 		trn = 700000000;
 		name = new Name("Damion","Manderson");
 		dob = LocalDate.parse("1985-01-07");
-		addr = new Address(78, "Hope Road","Maven","St.Andrew");
+		addr = new Address(78, "Hope Road", "St.Andrew");
 		email = "damian.manderson@jcf.gov.jm";
 		contactNum = "876-832-9082";
 		gender = "Male";
@@ -40,7 +40,7 @@ public class JCFOfficer extends User
 		System.out.println("The trn of driver is :" + trn);
 		System.out.println("The name of the jcf officer is :" + name.getFirstName() + " " + name.getLastName());
 		System.out.println("The date of birth of the jcf officer :" + dob);
-		System.out.println("The address of jcf officer is :"+ addr.getStreetNum() + "," + addr.getStreetName() + "," + addr.getCommunity() + "," + addr.getParish());
+		System.out.println("The address of jcf officer is :"+ addr.getStreetNum() + "," + addr.getStreetName() + "," + addr.getParish());
 		System.out.println("The email of jcf officer is  :" + email);
 		System.out.println("The contact number of jcf officer is :"+ contactNum);
 		System.out.println("The gender of jcf officer is :" + gender);
