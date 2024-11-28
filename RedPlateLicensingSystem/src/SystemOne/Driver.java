@@ -25,7 +25,7 @@ public class Driver extends User
 		System.out.println("The name of the driver is :" + name.getFirstName() + " " + name.getLastName());
 		System.out.println("The date of birth of the driver :" + dob);
 		
-		System.out.println("The address of driver is :"+ addr);
+		System.out.println("The address of driver is :"+  addr.getStreetNum() + "," + addr.getStreetName() + "," + addr.getParish());
 		System.out.println("The email of driver is  :" + email);
 		System.out.println("The contact number of driver is :"+ contactNum);
 		System.out.println("The gender of driver is :" + gender);
@@ -34,9 +34,24 @@ public class Driver extends User
 	 public String toCSV() 
 	 {
 	        return trn + "," + name.getFirstName() + "," + name.getLastName() + "," + dob + "," +
-	               addr.getStreetNum() + "," + addr.getStreetName() + "," + addr.getCommunity() + "," +
+	               addr.getStreetNum() + "," + addr.getStreetName() + "," +
 	               addr.getParish() + "," + contactNum + "," + gender;
 	 }
-
-	
+	 
+	 public String toCSV(int trn, Name name, LocalDate dob, Address addr, String contactNum)
+	 {
+		 return trn + "," + name.getFirstName() + "," + name.getLastName()+ "," + dob + "," +
+	               addr.getStreetNum() + "," + addr.getStreetName() + "," +
+	               addr.getParish() + "," + contactNum;
+	 }
+	 
+	 
+	 public void DisplayTicketDriver()
+	 {
+		 System.out.println("The trn of driver is :" + trn);
+		 System.out.println("The name of the driver is :" + name.getFirstName() + " " + name.getLastName());
+		 System.out.println("The date of birth of the driver :" + dob);
+		 System.out.println("The address of driver is :"+  addr.getStreetNum() + "," + addr.getStreetName() + "," + addr.getParish());
+		 System.out.println("The contact number of driver is :"+ contactNum);
+	 }
 }
