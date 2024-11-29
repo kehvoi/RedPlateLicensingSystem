@@ -7,6 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.InputMismatchException;
@@ -15,13 +16,9 @@ import java.util.Map;
 import java.util.Scanner;
 
 public class Main {
-
-	
-	
-	
 	
     // Global variable to hold the ticket number
-    public static int ticketNum = 6;
+    public static int ticketNum = 7;
     //PPV100000
     //PPV100001
     public static int ppvNum = 100000;
@@ -32,6 +29,9 @@ public class Main {
     
     public static int trnInput;
     public static String result;
+    public static Scanner scan = new Scanner(System.in);
+    public static String adminPass = "ABC123";
+    public static String passcode;
     //Global variables for ticket
     
     public static LocalDate today = LocalDate.now();
@@ -44,6 +44,12 @@ public class Main {
     public static int totalFineAmtInput;
     public static boolean warrantInput = false;
     public static String ticketPayStatusInput = "Unpaid";
+    public static boolean state = true;
+    
+    public static String filePath3 = "ticket_records.csv";
+	public static String filePath2 = "driver_records.csv";
+    public static String filePath = "ticketCount.txt";
+    
 
     public static void main(String[] args) 
     {
@@ -62,6 +68,7 @@ public class Main {
 		Address t3 = new Address(24,"Sutton Street","Kingston");
 		Address t4 = new Address(36,"Camp Road","Kingston");
 		Address t5 = new Address(79,"Duke Street","Kingston");
+		Address t6 = new Address (69, "Wilford Street","Kingston");
 		
 		Ticket defaultTic1 = new Ticket(123456789, 1, LocalDate.parse("2019-01-01"), LocalDate.parse("2019-01-22"), 1, "Aid And Abet No Driver’s Licence or Permit", 
                 "Outstanding", 15000, LocalDate.parse("2019-01-29") , t1, 0, 
@@ -83,14 +90,17 @@ public class Main {
                 "Outstanding", 30000, LocalDate.parse("2004-01-29") , t5, 0, 
                 0, true);
 		
+		Ticket defaultTic6 = new Ticket(123456789, 6, LocalDate.parse("2024-11-07"), LocalDate.parse("2024-11-28"), 5, "Careless Driving Causing Collision", 
+                "Unpaid", 25000, LocalDate.parse("2024-12-05") , t6, 0, 
+                0, true);
+		
 		
 		Tickets.add(defaultTic1);
 		Tickets.add(defaultTic2);
 		Tickets.add(defaultTic3);
 		Tickets.add(defaultTic4);
 		Tickets.add(defaultTic5);
-
-		
+		Tickets.add(defaultTic6);
 		
         
 		//Default User 2
@@ -107,20 +117,16 @@ public class Main {
 		Drivers.add(driver2);
 		Drivers.add(driver3);
 		
-		String filePath3 = "ticket_records.csv";
-    	String filePath2 = "driver_records.csv";
-        String filePath = "ticketCount.txt";
+		
         
 
         // Load ticket number from the file
         ticketNum = LoadTicketNum(filePath);
         
         
-        Scanner scan = new Scanner(System.in);
-        String adminPass = "ABC123";
-        String passcode;
         
-        boolean state = true;
+        
+        
         
         //Loads in the default users and tickets before the while loop starts
         DefaultDrivers("driver_records.csv", Drivers);//
@@ -130,154 +136,35 @@ public class Main {
         {
         	while (state)
             {
-            	System.out.print("Welcome to the Ticketing Issuing and Offender Checking System (TIOCS)"
-            			+ "\nHow may I assist?"
-            			+ "\n1 - JCF Officer"
-            			+ "\n2 - Driver"
-            			+ "\n3 - Exit"
-            			+ "\nEnter an option:");
-            	
-        
-            	option = scan.nextInt();
-            	
-            	switch (option)
-            	{
-            	case 1:
-            		System.out.println("Please enter the admin password:");
-            		passcode = scan.next();
-            		if (passcode.equals(adminPass))
-            		{
-            			System.out.println("1- Add new ticket to offender (driver)"
-            					+ "\n2 - View current ticketing information"
-            					+ "\n4 - Check status of a driver in the system"
-            					+ "\n5 - View all outstanding tickets (sorted by parish)"
-            					+ "\nEnter an option:");
-            			
-            			option = scan.nextInt();
-            			switch (option)
-            			{
-            			case 1:
-            				System.out.println("Please enter offender trn: ");
-            				trnInput = scan.nextInt();
-            				if (String.valueOf(trnInput).length() == 9)
-            				{
-            					result = searchDriverByTrn(filePath2, trnInput);
-                				if (result != null) {
-                		            System.out.println("Found driver record");
-                		            System.out.println("Please enter offense Code (1-7) to apply to offender:"
-                		            		+ "\n1 - Aid And Abet No Driver’s Licence or Permit"
-                		            		+ "\n2 - Aid And Abet Operating Motor Vehicle..."
-                		            		+ "\n3 - Body Protruding "
-                		            		+ "\n4 - Breach of special permit"
-                		            		+ "\n5 - Careless Driving Causing Collision"
-                		            		+ "\n6 - Careless Driving Where No Collision Occurs"
-                		            		+ "\n7 - Carrying dangerous goods without the transport....");
-                		            offenseCodeInput = scan.nextInt();
-                		            while(offenseCodeInput <=0  || offenseCodeInput > 7)
-                		            {
-                		            		System.out.println("That offenseCode is not available. Please enter offense Code (1-7).");
-                		            		offenseCodeInput = scan.nextInt();
-                		            }
-                		            offenseDescInput = GenerateOffenseDesc(offenseCodeInput,offenseDescInput);
-                		            fineAmtInput = GenerateFine(offenseCodeInput, fineAmtInput);
-                		            Address c1 = new Address(144,"Maxfield Ave","Kingston");
-                		            
-                		            Ticket tic = new Ticket(trnInput, ticketNum, today, weeks, offenseCodeInput, offenseDescInput, 
-                                            ticketPayStatusInput, fineAmtInput, courtDateInput, c1, totalUnpaidTicInput, 
-                                            totalFineAmtInput, warrantInput);
-                		            JCFOfficer jcf = new JCFOfficer();
-                		            tic.DisplayTicket();
-                		            jcf.DisplayTicketOfficer();
-                		            System.out.println("Driver details : " + result);
-                		            
-                		            try (FileWriter writer = new FileWriter("ticket_records.csv", true)) {
-                	                    writer.append(tic.toCSV());
-                	                    writer.append("\n");
-                	                } catch (IOException e) {
-                	                    System.out.println("An error occurred while saving the ticket.");
-                	                    e.printStackTrace();
-                	                }
-                		            ticketNum++;
-                		            SaveTicketNum(filePath, ticketNum);
-                		            
-                		            
-                		            
-                		            
-                		          //Saves the current ticket number to file
-                		            
-                		  
-                		            
-                		            
-                		        } else {
-                		            System.out.println("Driver not found with TRN");
-                		        }  
-            				}
-            				else
-            				{
-            				  System.out.println("Invalid TRN. TRN must contain 9 digits");
-            				}
-            				
-            				
-            				break;//break statement within inner loop
-            			case 2:
-            				String lastRecord = readLastRecord("ticket_records.csv");
-            				if (lastRecord != null) {
-            				    System.out.println("Last record: " + lastRecord);
-            				}
-            				
-            				//A JCF Officer should be able to view the current ticketing information 
-        		            //that was added and verified with the driver before the final submission.
-        		            System.out.println("\n");
-        		            System.out.println("Was the ticket verified with the driver before final submission? "
-        		            		+ "\nOptions: Yes or No?");
-        		            choice = scan.next().toUpperCase();
-        		            while (!choice.equals("YES") && !choice.equals("NO"))
-        		            {
-        		            	System.out.println("Invalid choice. Was the ticket verified with driver before final submission?"
-        		            			+ "\nOptions: Yes or No?");
-        		            	choice = scan.next().toUpperCase();
-        		            }
-        		            if (choice.equals("YES"))
-        		            {
-        		            	System.out.println("Final Submission of Ticket has been made after verifying with driver.");
-        		            	
-        		            }
-        		            else
-        		            {
-        		            	System.out.println("Last Ticket has been deleted from system because driver has not reviewed it to make Final Submission.");
-        		            	deleteLastRecord(filePath3);
-        		            }
-            				
-            				break;
-            				default:
-            				System.out.println("Invalid Input");
-            					break;
-            				
-            				
-            				
-            			}}//end of if statement
-            			
-            	break;
-            	case 2:
-            		
-            	break;
-            	case 3:
-            		state = false;
-            	break;	
-            	default:
-            		System.out.println("Invalid Option");
-            	break;
-            	}
-            	
-            	System.out.println("\n");
-            	
-            	
+        		System.out.println("Welcome to the Jamaica Constabulary Force and Public Passenger Vehicle Association. How may I assist?"
+        				+ "\n1 - Red Plate Licensing System (RPLS)"
+        				+ "\n2 - Ticketing Issuing and Offender Checking System (TIOCS)"
+        				+ "\n3 - Exit"
+        				+ "\nEnter an option:");
+        		option = scan.nextInt();
+        		switch (option)
+        		{
+        		case 1:
+        			RPLS();
+        			break;
+        		case 2:
+        			TIOCS(); 
+        			break;
+        		case 3:
+        			state = false;
+        			break;
+        		default:
+        			System.out.println("Invalid option. Please try again");
+        			break;
+        		}
+        		
+        		
             	
             }//end while loop
         	}//end try
         	catch(InputMismatchException e)
             {
-            	System.out.println("You inputted the wrong data type!");
+            	System.out.println("You inputted the wrong data type. Please try again");
             }
             catch(ArithmeticException e)
             {
@@ -505,6 +392,39 @@ private static int LoadTicketNum(String filepath) {
         }
     }// end DefaultTickets method
     
+    //Searches Driver Ticket Due Date
+    
+    public static void displayRowsWithPastDueDates(String filePath3) {
+        
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath3))) {
+            String line;
+            
+            
+            // Read each line in the file
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                
+                if (parts.length > 5) { // Ensure there are at least 6 columns (ticketDueDate and ticketPayStatus)
+                    String ticketDueDateString = parts[3].trim(); // Get the due date from the 4th column (index 3)
+                    String ticketPayStatus = parts[6].trim(); // Get the ticketPayStatus from the 6th column (index 5)
+                    
+                    
+                        // Parse the ticketDueDate to LocalDate
+                        LocalDate ticketDueDate = LocalDate.parse(ticketDueDateString);
+                        
+                        // Calculate the number of days between the due date and today
+                        if (ticketDueDate.isBefore(LocalDate.now()) && ticketPayStatus.equalsIgnoreCase("Unpaid")) {
+            	            System.out.println(line);
+                    } 
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+    }
+
+    
+    
     //Generate Offense Description based on offense code
     private static String GenerateOffenseDesc(int offenseCode, String offenseDesc)
 	{
@@ -552,6 +472,207 @@ private static int LoadTicketNum(String filepath) {
 		return fineAmt = 0;
 	}
     
-    //Add Ticket Method 
+    private static void TIOCSAddTicket()
+    {
+    	System.out.println("Please enter offender trn: ");
+		trnInput = scan.nextInt();
+		while (String.valueOf(trnInput).length() != 9)
+		{
+			System.out.println("Invalid TRN. TRN must contain 9 digits");
+			trnInput = scan.nextInt(); 
+		}
+		result = searchDriverByTrn(filePath2, trnInput);
+		if (result != null) {
+            System.out.println("Found driver record");
+            System.out.println("Please enter offense Code (1-7) to apply to offender:"
+            		+ "\n1 - Aid And Abet No Driver’s Licence or Permit"
+            		+ "\n2 - Aid And Abet Operating Motor Vehicle..."
+            		+ "\n3 - Body Protruding "
+            		+ "\n4 - Breach of special permit"
+            		+ "\n5 - Careless Driving Causing Collision"
+            		+ "\n6 - Careless Driving Where No Collision Occurs"
+            		+ "\n7 - Carrying dangerous goods without the transport....");
+            offenseCodeInput = scan.nextInt();
+            while(offenseCodeInput <=0  || offenseCodeInput > 7)
+            {
+            		System.out.println("That offenseCode is not available. Please enter offense Code (1-7).");
+            		offenseCodeInput = scan.nextInt();
+            }
+            offenseDescInput = GenerateOffenseDesc(offenseCodeInput,offenseDescInput);
+            fineAmtInput = GenerateFine(offenseCodeInput, fineAmtInput);
+            Address c1 = new Address(144,"Maxfield Ave","Kingston");
+            
+            Ticket tic = new Ticket(trnInput, ticketNum, today, weeks, offenseCodeInput, offenseDescInput, 
+                    ticketPayStatusInput, fineAmtInput, courtDateInput, c1, totalUnpaidTicInput, 
+                    totalFineAmtInput, warrantInput);
+            JCFOfficer jcf = new JCFOfficer();
+            tic.DisplayTicket();
+            jcf.DisplayTicketOfficer();
+            System.out.println("Driver details : " + result);
+            
+            try (FileWriter writer = new FileWriter("ticket_records.csv", true)) {
+                writer.append(tic.toCSV());
+                writer.append("\n");
+            } catch (IOException e) {
+                System.out.println("An error occurred while saving the ticket.");
+                e.printStackTrace();
+            }
+            ticketNum++;
+            SaveTicketNum(filePath, ticketNum);
+            }
+               
+          //Saves the current ticket number to file
+    
+    
+    }
+    
+    
+    
+    
+    private static void TIOCSViewCurrentTicket()
+    {
+    String lastRecord = readLastRecord("ticket_records.csv");
+	if (lastRecord != null) {
+	    System.out.println("Last record: " + lastRecord);
+	}
+	
+	//A JCF Officer should be able to view the current ticketing information 
+    //that was added and verified with the driver before the final submission.
+    System.out.println("\n");
+    System.out.println("Was the ticket verified with the driver before final submission? "
+    		+ "\nOptions: Yes or No?");
+    choice = scan.next().toUpperCase();
+    while (!choice.equals("YES") && !choice.equals("NO"))
+    {
+    	System.out.println("Invalid choice. Was the ticket verified with driver before final submission?"
+    			+ "\nOptions: Yes or No?");
+    	choice = scan.next().toUpperCase();
+    }
+    if (choice.equals("YES"))
+    {
+    	System.out.println("Final Submission of Ticket has been made after verifying with driver.");
+    	
+    }
+    else
+    {
+    	System.out.println("Last Ticket has been deleted from system because driver has not reviewed it to make Final Submission.");
+    	deleteLastRecord(filePath3);
+    }
+}
+    
+    private static void TIOCS()
+    {
+    	System.out.print("Welcome to the Ticketing Issuing and Offender Checking System (TIOCS)"
+    			+ "\nHow may I assist?"
+    			+ "\n1 - JCF Officer"
+    			+ "\n2 - Driver"
+    			+ "\n3 - Exit"
+    			+ "\nEnter an option:");
+    	
+
+    	option = scan.nextInt();
+    	
+    	switch (option)
+    	{
+    	//JCF Officer Option
+    	case 1:
+    		System.out.println("Please enter the admin password:");
+    		passcode = scan.next();
+    		if (passcode.equals(adminPass))
+    		{
+    			System.out.println("1- Add new ticket to offender (driver)"
+    					+ "\n2 - View current ticketing information"
+    					+ "\n3 - Check status of a driver in the system"
+    					+ "\n4 - View all outstanding tickets (sorted by parish)"
+    					+ "\nEnter an option:");
+    			
+    			option = scan.nextInt();
+    			switch (option)
+    			{
+    			case 1:
+    				TIOCSAddTicket();
+    				
+    				break;//break statement within inner loop
+    			case 2:
+    				TIOCSViewCurrentTicket();
+    				break;//break statement within inner loop
+    				
+    				
+    			case 3:
+    				//Focus on this lock in
+    				
+    				System.out.println("1 - Verify if the Driver has any unpaid tickets past 21 days"
+    						+ "\n2 -View all offenders who have outstanding tickets pending"
+    						+ "\n3 - View all the outstanding tickets in a specific parish"
+    						+ "\nEnter an option:");
+    						option = scan.nextInt();
+    						switch (option)
+    						{
+    						case 1:
+    							System.out.println("Enter driver trn number: ");
+    							trnInput = scan.nextInt();
+    							while (String.valueOf(trnInput).length() != 9)
+    							  {
+    							    System.out.println("TRN must be of length 9 digits. Please try again.");
+    							    System.out.println("Enter trn:");
+    							    trnInput = scan.nextInt();
+    							  }
+    								result = searchDriverByTrn(filePath2, trnInput);
+    								if (result != null) 
+    								{
+    						            System.out.println("Found driver record");
+    						            
+    						            
+    						            System.out.println("Searching driver's due tickets...");
+    						            displayRowsWithPastDueDates(filePath3);
+    								}
+    								else {
+    						            System.out.println("Driver not found with TRN");
+    						        }  
+    							
+    							
+    							break;
+    						case 2:
+    							
+    							break;
+    						case 3:
+    							break;
+    						default:
+    							System.out.println("Invalid input");
+    							break;
+    						}
+    				break;
+    				
+    				default:
+    				System.out.println("Invalid Input");
+    					break;
+    				
+    				
+    				
+    			}}//end of if statement
+    		else {
+    			System.out.println("Invalid password");
+    		}
+    			
+    	break;
+    	case 2:
+    		
+    	break;
+    	case 3:
+    		state = false;
+    	break;	
+    	default:
+    		System.out.println("Invalid Option");
+    	break;
+    	}
+    	
+    	System.out.println("\n");
+    	
+    }//end of TIOCS
+    
+    private static void RPLS()
+    {
+    	
+    }
     
 }//end of Class Main
