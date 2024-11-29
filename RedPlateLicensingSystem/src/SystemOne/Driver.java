@@ -4,7 +4,18 @@ import java.time.LocalDate;
 
 public class Driver extends User
 {
+	//Default Constructor
 	
+	public Driver()
+	{
+		trn = 100000011;
+		name = new Name("King","Charles");
+		dob = LocalDate.parse("1995-09-09");
+		addr = new Address(456, "Mountain View Avenue", "Westermoreland");
+		email = "king.charles@yahoo.com";
+		contactNum = "876-249-3133";
+		gender = "Male";
+	}
 	
 	//Primary Constructor
 	public Driver(int trn,Name name, LocalDate dob,  Address addr, String email, String contactNum, String gender)
