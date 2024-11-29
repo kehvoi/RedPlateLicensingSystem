@@ -1,6 +1,7 @@
 package SystemOne;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -9,6 +10,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
@@ -19,13 +21,14 @@ public class Main {
 	
 	
     // Global variable to hold the ticket number
-    public static int ticketNum = 1;
+    public static int ticketNum = 6;
     //PPV100000
     //PPV100001
     public static int ppvNum = 100000;
     public static String ppvLicense;
     public static int option;
     public static int license;
+    public static String choice;
     
     public static int trnInput;
     public static String result;
@@ -52,7 +55,44 @@ public class Main {
 		Name d1 = new Name("John", "Brown");
 		Address a1 = new Address(19,"Maldave Avenue","Kingston");
 		Driver driver1 = new Driver(123456789,d1, LocalDate.parse("2000-05-05"),a1, "john.brown@gmail.com", "8768403526", "Male");
+		
+		//Tickets for User 1
+		Address t1 = new Address(144,"Maxfield Ave","Kingston");
+		Address t2 = new Address(69,"Public West Building","Kingston");
+		Address t3 = new Address(24,"Sutton Street","Kingston");
+		Address t4 = new Address(36,"Camp Road","Kingston");
+		Address t5 = new Address(79,"Duke Street","Kingston");
+		
+		Ticket defaultTic1 = new Ticket(123456789, 1, LocalDate.parse("2019-01-01"), LocalDate.parse("2019-01-22"), 1, "Aid And Abet No Driver’s Licence or Permit", 
+                "Outstanding", 15000, LocalDate.parse("2019-01-29") , t1, 0, 
+                0, true);
+		
+		Ticket defaultTic2 = new Ticket(123456789, 2, LocalDate.parse("2019-06-29"), LocalDate.parse("2019-06-29"), 2, "Aid And Abet Operating Motor Vehicle...", 
+                "Paid", 30000, LocalDate.parse("2019-06-29") , t2, 0, 
+                0, false);
+		
+		Ticket defaultTic3 = new Ticket(123456789, 3, LocalDate.parse("2004-01-01"), LocalDate.parse("2004-01-22"), 3, "Body Protruding", 
+                "Paid", 5000, LocalDate.parse("2004-01-29") , t3, 0, 
+                0, false);
+		
+		Ticket defaultTic4 = new Ticket(123456789, 4, LocalDate.parse("2024-11-28"), LocalDate.parse("2024-12-19"), 7, "Carrying dangerous goods without the transport....", 
+                "Unpaid", 175000, LocalDate.parse("2024-12-26") , t4, 0, 
+                0, false);
+		
+		Ticket defaultTic5 = new Ticket(123456789, 5, LocalDate.parse("2020-05-05"), LocalDate.parse("2020-05-26"), 4, "Breach of special permit", 
+                "Outstanding", 30000, LocalDate.parse("2004-01-29") , t5, 0, 
+                0, true);
+		
+		
+		Tickets.add(defaultTic1);
+		Tickets.add(defaultTic2);
+		Tickets.add(defaultTic3);
+		Tickets.add(defaultTic4);
+		Tickets.add(defaultTic5);
 
+		
+		
+        
 		//Default User 2
 		Name d2 = new Name("Mary", "Anderson");
 		Address a2 = new Address(12, "Redwood Lane", "St.Andrew");
@@ -67,8 +107,10 @@ public class Main {
 		Drivers.add(driver2);
 		Drivers.add(driver3);
 		
+		String filePath3 = "ticket_records.csv";
     	String filePath2 = "driver_records.csv";
         String filePath = "ticketCount.txt";
+        
 
         // Load ticket number from the file
         ticketNum = LoadTicketNum(filePath);
@@ -80,8 +122,9 @@ public class Main {
         
         boolean state = true;
         
-        //Loads in the default users before the while loop starts
-        DefaultDrivers("driver_records.csv", Drivers);// Suppose to be in system 1
+        //Loads in the default users and tickets before the while loop starts
+        DefaultDrivers("driver_records.csv", Drivers);//
+        DefaultTickets("ticket_records.csv", Tickets);
         
         try 
         {
@@ -105,15 +148,15 @@ public class Main {
             		if (passcode.equals(adminPass))
             		{
             			System.out.println("1- Add new ticket to offender (driver)"
-            					+ "\n2 - Delete offender (driver) ticket"
-            					+ "\n3 - View current ticketing information"
+            					+ "\n2 - View current ticketing information"
             					+ "\n4 - Check status of a driver in the system"
             					+ "\n5 - View all outstanding tickets (sorted by parish)"
             					+ "\nEnter an option:");
             			
             			option = scan.nextInt();
-            			if (option == 1)
+            			switch (option)
             			{
+            			case 1:
             				System.out.println("Please enter offender trn: ");
             				trnInput = scan.nextInt();
             				if (String.valueOf(trnInput).length() == 9)
@@ -147,16 +190,20 @@ public class Main {
                 		            jcf.DisplayTicketOfficer();
                 		            System.out.println("Driver details : " + result);
                 		            
-                		            
-                		            Tickets.add(tic);
-                		            
-                		            AddTicket("ticket_records.csv", Tickets);
-                		            
+                		            try (FileWriter writer = new FileWriter("ticket_records.csv", true)) {
+                	                    writer.append(tic.toCSV());
+                	                    writer.append("\n");
+                	                } catch (IOException e) {
+                	                    System.out.println("An error occurred while saving the ticket.");
+                	                    e.printStackTrace();
+                	                }
                 		            ticketNum++;
-                		          //Saves the current ticket number to file
                 		            SaveTicketNum(filePath, ticketNum);
                 		            
                 		            
+                		            
+                		            
+                		          //Saves the current ticket number to file
                 		            
                 		  
                 		            
@@ -171,18 +218,45 @@ public class Main {
             				}
             				
             				
+            				break;//break statement within inner loop
+            			case 2:
+            				String lastRecord = readLastRecord("ticket_records.csv");
+            				if (lastRecord != null) {
+            				    System.out.println("Last record: " + lastRecord);
+            				}
+            				
+            				//A JCF Officer should be able to view the current ticketing information 
+        		            //that was added and verified with the driver before the final submission.
+        		            System.out.println("\n");
+        		            System.out.println("Was the ticket verified with the driver before final submission? "
+        		            		+ "\nOptions: Yes or No?");
+        		            choice = scan.next().toUpperCase();
+        		            while (!choice.equals("YES") && !choice.equals("NO"))
+        		            {
+        		            	System.out.println("Invalid choice. Was the ticket verified with driver before final submission?"
+        		            			+ "\nOptions: Yes or No?");
+        		            	choice = scan.next().toUpperCase();
+        		            }
+        		            if (choice.equals("YES"))
+        		            {
+        		            	System.out.println("Final Submission of Ticket has been made after verifying with driver.");
+        		            	
+        		            }
+        		            else
+        		            {
+        		            	System.out.println("Last Ticket has been deleted from system because driver has not reviewed it to make Final Submission.");
+        		            	deleteLastRecord(filePath3);
+        		            }
+            				
+            				break;
+            				default:
+            				System.out.println("Invalid Input");
+            					break;
             				
             				
-            				System.out.println("");
             				
-            				
-            				
-            			}
-            		}
-            		else
-            		{
-            			System.out.println("Wrong Password please try again");
-            		}
+            			}}//end of if statement
+            			
             	break;
             	case 2:
             		
@@ -290,7 +364,62 @@ public class Main {
         return index.get(searchTrn); // Return the matching line, or null if not found
     }
     
+    //Delete Last Record for Ticket
+    private static void deleteLastRecord(String filePath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            List<String> lines = new ArrayList<>();
+            String line;
+
+            // Read all lines into a list
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+
+            // If the file is empty, there's nothing to delete
+            if (lines.isEmpty()) {
+                System.out.println("File is empty.");
+                return;
+            }
+
+            // Remove the last line from the list
+            lines.remove(lines.size() - 1);
+
+            // Write the updated list to the original file
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+                for (String l : lines) {
+                    writer.write(l);
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error deleting last record: " + e.getMessage());
+        }
+    }
     
+    
+    private static String readLastRecord(String filePath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String lastLine = null;
+            String line;
+
+            // Read all lines and keep track of the last one
+            while ((line = reader.readLine()) != null) {
+                lastLine = line;
+            }
+
+            // If the file is empty, return null
+            if (lastLine == null) {
+                System.out.println("File is empty.");
+                return null;
+            }
+
+            return lastLine;
+        } catch (IOException e) {
+            System.out.println("Error reading last record: " + e.getMessage());
+            return null;
+        }
+    }
+
     
     
     
@@ -341,19 +470,21 @@ private static int LoadTicketNum(String filepath) {
         }
     }
     
-    private static void AddTicket(String filePath3, ArrayList<Ticket> parameterList) {
-        File file = new File(filePath3);
+    
+    
+    private static void DefaultTickets(String filePath4, ArrayList<Ticket> parameterList) {
+        File file = new File(filePath4);
 
-        // If the file doesn't exist, create it and add tickets
+        // If the file doesn't exist, create it and add default drivers
         try {
             if (file.createNewFile()) {
                 System.out.println("File created: " + file.getName());
-                System.out.println("Ticket is Successfully Loaded");
+                System.out.println("Default Tickets Successfully Created");
                 
                // Write the drivers to the file
             try (FileWriter writer = new FileWriter(file, true)) {
-                for (Ticket ticket : parameterList) {
-                    writer.write(ticket.toCSV());  // Get the CSV string and write it to the file
+                for (Ticket tickets : parameterList) {
+                    writer.write(tickets.toCSV());  // Get the CSV string and write it to the file
                     writer.append("\n");  // Append a newline after each driver's record
                 }
               } //end second try
@@ -365,19 +496,6 @@ private static int LoadTicketNum(String filepath) {
                 
                 
             }//endif
-            else
-            {
-            	try (FileWriter writer = new FileWriter(file, true)) {
-                    for (Ticket ticket : parameterList) {
-                        writer.write(ticket.toCSV());  // Get the CSV string and write it to the file
-                        writer.append("\n");  // Append a newline after each driver's record
-                    }
-                  } //end second try
-                  catch (IOException e) {
-                    System.out.println("An error occurred while saving the driver info.");
-                    e.printStackTrace();
-                  }//end catch  
-            }
 
            
         }//end first try 
@@ -385,7 +503,7 @@ private static int LoadTicketNum(String filepath) {
             System.out.println("An error occurred while creating the file.");
             e.printStackTrace();
         }
-    }// end DefaultDrivers method
+    }// end DefaultTickets method
     
     //Generate Offense Description based on offense code
     private static String GenerateOffenseDesc(int offenseCode, String offenseDesc)
@@ -393,7 +511,7 @@ private static int LoadTicketNum(String filepath) {
 		switch (offenseCode)
 		{
 		case 1:
-			return offenseDesc = "Aid And Abet No Driver’s Licence or Permit";
+			return offenseDesc = "Aid And Abet No Driver's Licence or Permit";
 		case 2:
 			return offenseDesc = "Aid And Abet Operating Motor Vehicle...";
 		case 3:
