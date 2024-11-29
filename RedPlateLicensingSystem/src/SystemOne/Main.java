@@ -7,7 +7,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
-
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.InputMismatchException;
@@ -26,8 +26,15 @@ public class Main {
     public static int option;
     public static int license;
     public static String choice;
+    public static String policerecord;
+    public static String accident;
+    public static String outstandingTicket;
+    public static String applicantResult;
     
     public static int trnInput;
+    public static String parishInput;
+    public static String dobString;
+    
     public static String result;
     public static Scanner scan = new Scanner(System.in);
     public static String adminPass = "ABC123";
@@ -145,7 +152,7 @@ public class Main {
         		switch (option)
         		{
         		case 1:
-        			RPLS();
+        			RPLTS();
         			break;
         		case 2:
         			TIOCS(); 
@@ -307,7 +314,41 @@ public class Main {
         }
     }
 
-    
+    private static String ValidateParish(String y, int x) {
+        switch(x) {
+            case 1:
+                return y = "Kingston";
+            case 2:
+                return y = "St Andrew";
+            case 3:
+                return y = "St Thomas";
+            case 4:
+                return y = "Portland";
+            case 5:
+                return y = "St Mary";
+            case 6:
+                return y = "St Ann";
+            case 7:
+                return y = "Trelawny";
+            case 8:
+                return y = "St James";
+            case 9:
+                return y = "Hanover";
+            case 10:
+                return y = "Westmoreland";
+            case 11:
+                return y = "St Elizabeth";
+            case 12:
+                return y = "Manchester";
+            case 13:
+                return y = "Clarendon";
+            case 14:
+                return y = "St Catherine";
+            default:
+                return y;  // Default case if x is out of range (1-14)
+        }
+    }
+
     
     
     //Methods for Ticket Class
@@ -472,6 +513,167 @@ private static int LoadTicketNum(String filepath) {
 		return fineAmt = 0;
 	}
     
+    private static void CreateApplication()
+    {
+    	
+
+		Driver applicant = new Driver();
+		Name applicantName = new Name();
+		Address applicantAddress = new Address();
+		
+		System.out.println("Please enter trn: ");
+		applicant.setTrn(scan.nextInt());
+		
+		scan.nextLine();
+		while (String.valueOf(applicant.getTrn()).length() != 9)
+		{
+			System.out.println("Invalid TRN. TRN must contain 9 digits");
+			applicant.setTrn(scan.nextInt());
+			scan.nextLine();
+		}
+		
+		
+		System.out.println("\nEnter first name: ");
+        applicantName.setFirstName(scan.next());
+        
+        System.out.println("Enter last name: ");
+        applicantName.setLastName(scan.next());
+        
+        // Set the driver's name using the Name object
+        applicant.setName(applicantName);
+        
+        LocalDate dob = null;
+        
+        // Ensure we read a full line for the date of birth
+        
+        // Loop until valid date is entered
+        while (dob == null) {
+            try {
+                dob = LocalDate.parse(dobString, DateTimeFormatter.ISO_LOCAL_DATE);  // Parse the date string
+            } catch (Exception e) {
+                System.out.println("Enter date of birth (YYYY-MM-DD format):");
+                dobString = scan.nextLine();  // Capture new input if invalid date
+            }
+        }
+        
+        applicant.setDob(dob); 
+        
+        
+        System.out.println("Enter the applicant's street number: ");
+        applicantAddress.setStreetNum(scan.nextInt());
+        scan.nextLine();
+        System.out.println("Enter the applicant's street name");
+        applicantAddress.setStreetName(scan.next());
+        
+      
+        System.out.println("1 - Kingston, 2 - St Andrew, 3 - St Thomas,  4 - Portland, 5 - St Mary,");
+        System.out.println("\n6 - St Ann, 7 - Trelawny, 8 - St James, 9 - Hanover, 10 - Westermoreland,");
+        System.out.println("\n11 - St Elizabeth, 12 - Manchester, 13 - Clarendon, 14 - St Catherine");
+        System.out.println("\nEnter the applicant's parish (1-14): ");
+        option = scan.nextInt();
+        while (option <= 0 || option >14)
+		{
+        	System.out.println("\n");
+			System.out.println("Invalid Parish. Please enter valid parish from options");
+			System.out.println("\n1 - Kingston, 2 - St Andrew, 3 - St Thomas,  4 - Portland, 5 - St Mary,");
+			System.out.println("\n6 - St Ann, 7 - Trelawny, 8 - St James, 9 - Hanover, 10 - Westermoreland,");
+			System.out.println("\n11 - St Elizabeth, 12 - Manchester, 13 - Clarendon, 14 - St Catherine");
+			System.out.println("\nEnter the applicant's parish (1-14): ");
+			option = scan.nextInt();
+			scan.nextLine();
+		}
+        applicantAddress.setParish(ValidateParish(parishInput,option));
+        applicant.setAddr(applicantAddress);
+		
+        System.out.println("Enter your email address: ");
+        applicant.setEmail(scan.next());
+        
+        System.out.println("Enter your phone number: ");
+        applicant.setContactNum(scan.next());
+        
+        System.out.println("Enter your gender: "
+        		+ "Options: Male, Female, or Other");
+        
+        applicant.setGender(scan.next().toUpperCase());
+        while (!applicant.getGender().equals("MALE") && !applicant.getGender().equals("FEMALE") && !applicant.getGender().equals("Other"))
+        {
+        	System.out.println("Invalid choice. Please enter correct gender from"
+        			+ "\nOptions: Male, Female, or Other");
+        	applicant.setGender(scan.next().toUpperCase());
+        }
+        
+        
+        System.out.println("Does the driver have a negative police record?(yes or no)");
+        policerecord = scan.next().toUpperCase();
+        while (!policerecord.equals("YES") && !policerecord.equals("NO"))
+        {
+        	System.out.println("Invalid choice. Does the driver have a negative police record?(yes or no)");
+        	policerecord = scan.next().toUpperCase();
+        }
+        
+        System.out.println("Did the driver cause any accident(s) within the last two years?(yes or no)");
+        accident = scan.next().toUpperCase();
+        while (!accident.equals("YES") && !accident.equals("NO"))
+        {
+        	System.out.println("Invalid choice.\nDid the driver cause any accident(s) within the last two years?(yes or no)");
+        	accident = scan.next().toUpperCase();
+        }
+        
+        System.out.println("Does the driver have any outstanding ticket?(yes or no)");
+        outstandingTicket = scan.next().toUpperCase();
+        while (!outstandingTicket.equals("YES") && !outstandingTicket.equals("NO"))
+        {
+        	System.out.println("Invalid choice.\nDoes the driver have any outstanding ticket?(yes or no)");
+        	outstandingTicket = scan.next().toUpperCase();
+        }
+        
+        boolean status;
+        if (policerecord.equals("YES") || accident.equals("YES") || outstandingTicket.equals("YES")) {
+            System.out.println("Application Denied!! You need to change the proposed driver with 5-10 business days\n");
+            System.out.println("Would you like to change the proposed driver? (yes or no)\n");
+            String driverChange = scan.nextLine();
+            if (driverChange.equals("yes")) {
+            	System.out.println("The applicant will have to change the proposed driver within 5 to 10 business days,"
+            			+ "\n otherwise, the application will be denied.");
+            	status = false;
+            }
+            else
+            {
+            	System.out.println("Application denied");
+            	status = false;
+            }
+        } else {
+            System.out.println("Permit Approved");
+            status = true;
+        }
+        
+        
+        if (status == true)
+        {
+        	applicantResult = "Passed";
+        }
+        else
+        {
+        	applicantResult = "Failed";
+        }
+        
+        System.out.println("Date of Application " + today);
+        System.out.println("Applicant Status: " + applicantResult);
+        applicant.Info();
+        
+        
+        
+        System.out.println("Police record?:" + policerecord );
+        System.out.println("Accident(s)? " + accident);
+        System.out.println("Outstanding tickets?:" + outstandingTicket);
+        
+        
+    }
+        
+        
+        
+        
+    
     private static void TIOCSAddTicket()
     {
     	System.out.println("Please enter offender trn: ");
@@ -606,6 +808,12 @@ private static int LoadTicketNum(String filepath) {
     						+ "\n3 - View all the outstanding tickets in a specific parish"
     						+ "\nEnter an option:");
     						option = scan.nextInt();
+    						while (option <=0  || option > 3 )
+    						{
+    							System.out.println("Invalid Input. Please enter a valid option"
+    									+ "Enter an option: ");
+    							option = scan.nextInt();
+    						}
     						switch (option)
     						{
     						case 1:
@@ -624,6 +832,7 @@ private static int LoadTicketNum(String filepath) {
     						            
     						            
     						            System.out.println("Searching driver's due tickets...");
+    						            System.out.println("Driver has unpaid tickets below");
     						            displayRowsWithPastDueDates(filePath3);
     								}
     								else {
@@ -654,8 +863,29 @@ private static int LoadTicketNum(String filepath) {
     			System.out.println("Invalid password");
     		}
     			
-    	break;
+    	break;//end of main case
     	case 2:
+    		System.out.println("Enter driver trn number: ");
+			trnInput = scan.nextInt();
+			while (String.valueOf(trnInput).length() != 9)
+			 {
+			    System.out.println("TRN must be of length 9 digits. Please try again.");
+			    System.out.println("Enter trn:");
+			    trnInput = scan.nextInt();
+			 }
+    		System.out.println("1 – Check for all past tickets for driver (ascending alphabetical order) "
+    				+ "\n2 – Make online payment for tickets (that are issued but not past due)"
+    				+ "\n3 – Check for past-due tickets. Tickets which have passed the 21 days for payment will reflect a court details. "
+    				+ "\n4 - View ticket(s) that have not passed due based on their TRN"
+    				+ "\n5 – Check where there is a warrant issued and display which police station they should turn themselves in."
+    				+ "Enter an option:");
+    		
+            option = scan.nextInt();
+            
+
+            
+       
+    
     		
     	break;
     	case 3:
@@ -670,9 +900,68 @@ private static int LoadTicketNum(String filepath) {
     	
     }//end of TIOCS
     
-    private static void RPLS()
+    private static void RPLTS()
     {
-    	
+    	System.out.println("***Red Plate Licensing System***");
+		System.out.println("\n");
+		System.out.println("1 - Processing Officer"
+				+ "\n2 - Driver"
+				+ "\n3 - Exit"
+				+ "\nEnter an option:");
+		option = scan.nextInt();
+		while (option <=0  || option > 3 )
+		{
+			System.out.println("Invalid Input. Please enter a valid option"
+					+ "Enter an option: ");
+			option = scan.nextInt();
+		}
+		switch (option)
+		{
+		case 1:
+			System.out.println("Enter admin pass");
+			passcode = scan.next();
+			if (passcode.equals(adminPass))
+    		{
+				System.out.println("1: Create");
+				System.out.println("2: Update");
+				System.out.println("3: Delete");
+				System.out.println("4: Reject");
+				System.out.println("5: Exit");
+				option = scan.nextInt();
+				while (option <=0  || option > 3 )
+				{
+					System.out.println("Invalid Input. Please enter a valid option"
+							+ "Enter an option: ");
+					option = scan.nextInt();
+				}
+				switch (option)
+				{
+					case 1:
+						CreateApplication();
+					break;
+					
+				}
+				
+		    	/*System.out.println("1 – Check for all past tickets for driver (ascending alphabetical order) "
+						+ "\n2 – Make online payment for tickets (that are issued but not past due)"
+						+ "\n3 – Check for past-due tickets. Tickets which have passed the 21 days for payment will reflect a court details. "
+						+ "\n4 - View ticket(s) that have not passed due based on their TRN"
+						+ "\n5 – Check where there is a warrant issued and display which police station they should turn themselves in."
+						+ "Enter an option:");*/
+    		}
+			else
+			{
+				
+			}
+			break;
+		case 2:
+			break;
+		case 3:
+			state = false;
+		
+		}//end of switch statement
+		
+		
     }
     
 }//end of Class Main
