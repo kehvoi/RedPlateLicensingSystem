@@ -5,6 +5,7 @@ import java.time.LocalDate;
 public class PPVLicense 
 {
 	//Attributes
+	private int trn;
 	private String badgeNum;
 	private LocalDate badgeIssueDate;
 	private LocalDate badgeDueDate;
@@ -13,15 +14,17 @@ public class PPVLicense
 	//Default Constructor
 	public PPVLicense()
 	{
-		badgeNum = "";
-		badgeIssueDate = LocalDate.now();
+		trn = 123456789;
+		badgeNum = "PL0001";
+		badgeIssueDate = LocalDate.parse("2022-01-01");
 		badgeDueDate = badgeIssueDate.plusYears(4);
-		badgeParish = "";
+		badgeParish = "Kingston";
 	}
 	
 	//Primary Constructor
-	public PPVLicense(String badgeNum, LocalDate badgeIssueDate, LocalDate badgeDueDate, String badgeParish)
+	public PPVLicense(int trn, String badgeNum, LocalDate badgeIssueDate, LocalDate badgeDueDate, String badgeParish)
 	{
+		this.trn = trn;
 		this.badgeNum = badgeNum;
 		this.badgeIssueDate = badgeIssueDate;
 		this.badgeDueDate = badgeDueDate;
@@ -31,6 +34,7 @@ public class PPVLicense
 	//Copy Constructor
 	public PPVLicense(PPVLicense ppv)
 	{
+		this.trn = ppv.trn;
 		this.badgeNum = ppv.badgeNum;
 		this.badgeIssueDate = ppv.badgeIssueDate;
 		this.badgeDueDate = ppv.badgeDueDate;
@@ -41,12 +45,20 @@ public class PPVLicense
 	public String toString()
 	{
 		String output;
-		output = "The badge number is :" + badgeNum;
-		output += "The badge issue date is :" + badgeIssueDate;
-		output += "The badge due date is :" + badgeDueDate;
+		output = "The driver trn is " + trn;
+		output += "\nThe badge number is :" + badgeNum;
+		output += "\nThe badge issue date is :" + badgeIssueDate;
+		output += "\nThe badge due date is :" + badgeDueDate;
+		output += "\nThe badge parish is " + badgeParish;
 		System.out.println(output);
 		return output;
 	}
+	
+	//ToCSV Method
+	public String toCSV() 
+	 {
+	        return trn + "," + badgeNum + "," + badgeIssueDate + "," + badgeDueDate + "," + badgeParish;
+	 }
 	
 
 }
