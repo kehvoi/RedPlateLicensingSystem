@@ -9,11 +9,24 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.InputMismatchException;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+
+/*
+ Group Members:
+	Chevannese Ellis, 2301109
+	Kehvoi Thompson, 2304224
+	Janae Bernard, 2209025
+	Karlicia Sutherland, 2302691
+	Kay-Ann Green, 2110490
+	
+	Day/Time of Practical Class: Wed3pm
+ */
 
 public class Main {
 	
@@ -135,9 +148,6 @@ public class Main {
 		Drivers.add(driver2);
 		Drivers.add(driver3);
 		Drivers.add(driver4);
-		
-		
-        
 
         // Load ticket number and ppvNum from respective files
         ticketNum = LoadTicketNum("ticketCount.txt");
@@ -145,11 +155,6 @@ public class Main {
         
         //Formats PPV License to represent real life licenses
         ppvLicense = String.format("PL%04d", ppvNum);
-        
-        
-        
-        
-        
         
         //Loads in the default users,tickets, ppvLicense before the while loop starts
         DefaultDrivers("driver_records.csv", Drivers);
@@ -161,20 +166,26 @@ public class Main {
         {
         	while (state)
             {
+        		//Displays main menu to user greeting them and asking them which system they want to select
         		System.out.println("Welcome to the Jamaica Constabulary Force and Public Passenger Vehicle Association. How may I assist?"
-        				+ "\n1 - Red Plate Licensing System (RPLTS)"
+        				+ "\n1 - Red Plate Licensing System (RPLS)"
         				+ "\n2 - Ticketing Issuing and Offender Checking System (TIOCS)"
         				+ "\n3 - Exit"
         				+ "\nEnter an option:");
         		option = scan.nextInt();
         		switch (option)
         		{
+        		//Red Plate Licensing System (RPLS)
         		case 1:
-        			RPLTS();
+        			//RPLS() method contains all the methods associated with Red Plate Licensing System 
+        			RPLS();
         			break;
+        		//Ticketing Issuing and Offender Checking System (TIOCS)
         		case 2:
+        			//TIOCS() method contains all the methods associated with Ticketing Issuing and Offender Checking System
         			TIOCS(); 
         			break;
+        		//Exit
         		case 3:
         			state = false;
         			break;
@@ -196,59 +207,95 @@ public class Main {
             	System.out.println("You can't divide!");
             }
             scan.close();
-            
-            
-            
             System.out.println("Thank you for your business. Have a nice day");
-            
-            
-        }// end of private static void main
+}// end of private static void main
         
-        
-  //Methods for PPV License
-    
-    private static void DefaultPPVLicense(String filePath, ArrayList<PPVLicense> parameterList)
+    //Red Plate Licensing System (RPLS)
+    private static void RPLS()
     {
-    	File file = new File(filePath);
-
-        // If the file doesn't exist, create it and add default drivers
-        try {
-            if (file.createNewFile()) {
-                System.out.println("File created: " + file.getName());
-                
-               // Write the drivers to the file
-            try (FileWriter writer = new FileWriter(file, true)) {
-                for (PPVLicense ppv : parameterList) {
-                    writer.write(ppv.toCSV());  // Get the CSV string and write it to the file
-                    writer.append("\n");  
-                }
-              } //end second try
-              catch (IOException e) {
-                System.out.println("An error occurred while saving the PPV License info.");
-                e.printStackTrace();
-              }//end catch  
-                
-                
-                
-            }//endif
-
-           
-        }//end first try 
-        catch (IOException e) {
-            System.out.println("An error occurred while creating the file.");
-            e.printStackTrace();
-        }
+    	System.out.println("***Red Plate Licensing System***");
+		System.out.println("\n");
+		System.out.println("1 - Processing Officer"
+				+ "\n2 - Driver"
+				+ "\n3 - Exit"
+				+ "\nEnter an option:");
+		option = scan.nextInt();
+		//Validates option inputed by user
+		while (option <=0  || option > 3 )
+		{
+			System.out.println("Invalid Input. Please enter a valid option"
+					+ "Enter an option: ");
+			option = scan.nextInt();
+		}
+		switch (option)
+		{
+		//Processing Officer
+		case 1:
+			//Calls upon the method OptionProcessingOfficer to carry out all methods associated with Processing Officer
+			OptionProcessingOfficer();
+			break;
+		//Driver
+		case 2:
+			//Calls upon the method OptionDriver to carry out all methods associated with Driver
+			OptionDriver();		
+			break;
+		//Exit
+		case 3:
+			//This option terminates the program
+			state = false;
+		
+		}//end of switch statement
+		
+		
+    }//End of Red Plate Licensing System (RPLS)
+    
+    //Ticketing Issuing and Offender Checking System (TIOCS)
+    private static void TIOCS()
+    {
+    	System.out.print("Welcome to the Ticketing Issuing and Offender Checking System (TIOCS)"
+    			+ "\nHow may I assist?"
+    			+ "\n1 - JCF Officer"
+    			+ "\n2 - Driver"
+    			+ "\n3 - Exit"
+    			+ "\nEnter an option:");
     	
-    }
 
-
-
+    	option = scan.nextInt();
+    	
+    	switch (option)
+    	{
+    	//JCF Officer
+    	case 1:
+    		//Calls upon the method OptionJCFOfficer to carry out all methods associated with JCFOfficer
+    		OptionJCFOfficer();
+    	break;//end of main case
+    	
+    	//Driver
+    	case 2:
+    		//Calls upon the method OptionJCFOfficer to carry out all methods associated with Driver
+    		OptionDriver();
+    	break;
+    	
+    	//Exit
+    	//This option terminates the program
+    	case 3:
+    		state = false;
+    	break;	
+    	default:
+    		System.out.println("Invalid Option");
+    	break;
+    	}
+    	
+    	System.out.println("\n");
+    	
+    }//End of Ticketing Issuing and Offender Checking System (TIOCS)
     
     
     
-    //Methods for Drivers
     
-  //Method to Load Default Driver Records
+  //Methods Default Driver, Ticket and PPV License
+    
+    
     private static void DefaultDrivers(String filePath, ArrayList<Driver> parameterList) {
         File file = new File(filePath);
 
@@ -256,13 +303,42 @@ public class Main {
         try {
             if (file.createNewFile()) {
                 System.out.println("File created: " + file.getName());
-                System.out.println("Default Users Successfully Loaded");
                 
-               // Write the drivers to the file
+               // Write the drivers to the file using ArrayList
             try (FileWriter writer = new FileWriter(file, true)) {
                 for (Driver driver : parameterList) {
-                    writer.write(driver.toCSV());  // Get the CSV string and write it to the file
-                    writer.append("\n");  // Append a newline after each driver's record
+                    writer.write(driver.toCSV());  // Call upon the toCSV method and write defaults to the file
+                    writer.append("\n");  // Create a newline after each driver's record
+                }
+              } //end second try
+              catch (IOException e) {
+                System.out.println("An error occurred while saving the driver info.");
+                e.printStackTrace();
+              }//end catch  
+             
+            }//endif
+           
+        }//end first try 
+        catch (IOException e) {
+            System.out.println("An error occurred while creating the file.");
+            e.printStackTrace();
+        }
+    }// end DefaultDrivers method
+    
+    
+    private static void DefaultTickets(String placeholder, ArrayList<Ticket> parameterList) {
+        File file = new File(placeholder);
+
+        // If the file doesn't exist, create it and add default tickets
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+                
+             // Write the tickets to the file using ArrayList
+            try (FileWriter writer = new FileWriter(file, true)) {
+                for (Ticket tickets : parameterList) {
+                    writer.write(tickets.toCSV());  //Call upon the toCSV method and write defaults to the file
+                    writer.append("\n");  //Create a newline after each driver's record
                 }
               } //end second try
               catch (IOException e) {
@@ -280,8 +356,450 @@ public class Main {
             System.out.println("An error occurred while creating the file.");
             e.printStackTrace();
         }
-    }// end DefaultDrivers method
+    }// End DefaultTickets method
     
+    
+    private static void DefaultPPVLicense(String filePath, ArrayList<PPVLicense> parameterList)
+    {
+    	File file = new File(filePath);
+
+        // If the file doesn't exist, create it and add default PPVLicense
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+                
+               // Write the drivers to the file
+            try (FileWriter writer = new FileWriter(file, true)) {
+                for (PPVLicense ppv : parameterList) {
+                    writer.write(ppv.toCSV());  //Call upon the toCSV method and write defaults to the file
+                    writer.append("\n");  //Create a newline after each driver's record
+                }
+              } //end second try
+              catch (IOException e) {
+                System.out.println("An error occurred while saving the PPV License info.");
+                e.printStackTrace();
+              }//end catch  
+                   
+            }//endif
+           
+        }//end first try 
+        catch (IOException e) {
+            System.out.println("An error occurred while creating the file.");
+            e.printStackTrace();
+        } 	
+    } //end DefaultPPVLicense method
+    
+    
+    
+    //Load and Save Methods for ticketNum and ppvLicense
+    
+    
+    // Method to load the ticket number from the file
+    private static int LoadTicketNum(String filepath) {
+            // Create a File object
+            File file = new File(filepath);
+
+            // Check if the file exists
+            if (file.exists()) {
+                try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
+                    String line = reader.readLine();
+                    if (line != null) {
+                        return Integer.parseInt(line); // Return the ticket number from the file
+                    }
+                } catch (IOException e) {
+                    System.out.println("An error occurred while reading the file.");
+                    e.printStackTrace();
+                }
+            } else {
+                // If file doesn't exist, create it and initialize the ticket number to 7
+                try {
+                    if (file.createNewFile()) {
+                        System.out.println("File created: " + file.getName());
+                        SaveCount("ticketCount", 7);
+                    }
+                } catch (IOException e) {
+                    System.out.println("An error occurred while creating the file.");
+                    e.printStackTrace();
+                }
+            }
+
+            return 7; // Return default value if the file was not found
+        }//End of LoadTicket Method
+
+    private static int LoadPPV(String filepath) {
+        // Create a File object
+        File file = new File(filepath);
+
+        // Check if the file exists
+        if (file.exists()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
+                String line = reader.readLine();
+                if (line != null) {
+                    return Integer.parseInt(line); // Return the ppv number from the file
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred while reading the file.");
+                e.printStackTrace();
+            }
+        } else {
+            // If file doesn't exist, create it and initialize the ppv number to 1003
+            try {
+                if (file.createNewFile()) {
+                    System.out.println("File created: " + file.getName());
+                    
+                    SaveCount("ppvCount.txt", 1003);
+                }
+            } catch (IOException e) {
+                System.out.println("An error occurred while creating the file.");
+                e.printStackTrace();
+            }
+        }
+
+        return 1003; // Return default value if the file was not found
+    }//End of LoadPPV Method
+
+  // Method to save the ticket number or ppv number back to the file
+   private static void SaveCount(String filepath, int x) {
+     try (FileWriter writer = new FileWriter(filepath)) {
+      // Write the ticket number or ppv number to the file
+      writer.write(String.valueOf(x));
+       } catch (IOException e) {
+         System.out.println("An error occurred while saving the counter");
+           e.printStackTrace();
+        }
+    }//End of SaveCount
+   
+   
+   //Processing Officer Methods related to the options
+   
+   //This method is used to make drivers apply for PPVLicense and become registered on the system
+   private static void CreateApplication()
+   {
+   	System.out.println("-----Create an Application-----\n");
+   		//Creates objects related to applicant
+		Driver applicant = new Driver();
+		Name applicantName = new Name();
+		Address applicantAddress = new Address();
+		
+		System.out.println("Please enter trn: ");
+		applicant.setTrn(scan.nextInt());
+		
+		scan.nextLine();
+		//While Loop that validates that trn contains 9 digits
+		while (String.valueOf(applicant.getTrn()).length() != 9)
+		{
+			System.out.println("Invalid TRN. TRN must contain 9 digits");
+			applicant.setTrn(scan.nextInt());
+			scan.nextLine();
+		}
+		
+		System.out.println("\nEnter first name: ");
+       applicantName.setFirstName(scan.next());
+       
+       System.out.println("Enter last name: ");
+       applicantName.setLastName(scan.next());
+       
+       // Set the driver's name using the Name object
+       applicant.setName(applicantName);
+       
+       LocalDate dob = null;
+       
+     //While Loop which validates that date of birth is entered in the correct format contains 
+       while (dob == null) {
+           try {
+               dob = LocalDate.parse(dobString, DateTimeFormatter.ISO_LOCAL_DATE);  // Parse the date string
+           } catch (Exception e) {
+               System.out.println("Enter date of birth (YYYY-MM-DD format):");
+               dobString = scan.nextLine();  // Capture new input if invalid date
+           }
+       }
+       
+       applicant.setDob(dob); 
+       
+       System.out.println("Enter the applicant's street number: ");
+       applicantAddress.setStreetNum(scan.nextInt());
+       scan.nextLine();  // This clears the buffer after reading the integer
+
+       System.out.println("Enter the applicant's street name: ");
+       applicantAddress.setStreetName(scan.nextLine());
+       
+       System.out.println("\n");
+       System.out.println("1 - Kingston, 2 - St Andrew, 3 - St Thomas,  4 - Portland, 5 - St Mary,");
+       System.out.println("\n6 - St Ann, 7 - Trelawny, 8 - St James, 9 - Hanover, 10 - Westermoreland,");
+       System.out.println("\n11 - St Elizabeth, 12 - Manchester, 13 - Clarendon, 14 - St Catherine");
+       System.out.println("\nEnter the applicant's parish (1-14): ");
+       option = scan.nextInt();
+       
+       //While Loop that validates 
+       while (option <= 0 || option >14)
+		{
+       	System.out.println("\n");
+			System.out.println("Invalid Parish. Please enter valid parish from options");
+			System.out.println("\n1 - Kingston, 2 - St Andrew, 3 - St Thomas,  4 - Portland, 5 - St Mary,");
+			System.out.println("\n6 - St Ann, 7 - Trelawny, 8 - St James, 9 - Hanover, 10 - Westermoreland,");
+			System.out.println("\n11 - St Elizabeth, 12 - Manchester, 13 - Clarendon, 14 - St Catherine");
+			System.out.println("\nEnter the applicant's parish (1-14): ");
+			option = scan.nextInt();
+			scan.nextLine();
+		}
+       applicantAddress.setParish(ValidateParish(parishInput,option));
+       applicant.setAddr(applicantAddress);
+		
+       System.out.println("Enter your email address: ");
+       applicant.setEmail(scan.next());
+       
+       System.out.println("Enter your phone number: ");
+       applicant.setContactNum(scan.next());
+       
+       System.out.println("Please enter gender from: ");
+       System.out.println("Options: Male, Female, or Other");
+       System.out.println("Enter a option: ");
+       applicant.setGender(scan.next().toUpperCase());
+       while (!applicant.getGender().equals("MALE") && !applicant.getGender().equals("FEMALE") && !applicant.getGender().equals("OTHER"))
+       {
+       	System.out.println("Invalid choice. Please enter correct gender from:"
+       			+ "\nMale, Female, or Other"
+       			+ "\nEnter a option: ");
+       	applicant.setGender(scan.next().toUpperCase());
+       }
+       
+       
+       System.out.println("Does the driver have a negative police record?(yes or no)");
+       policerecord = scan.next().toUpperCase();
+       while (!policerecord.equals("YES") && !policerecord.equals("NO"))
+       {
+       	System.out.println("Invalid choice. Does the driver have a negative police record?(yes or no)");
+       	policerecord = scan.next().toUpperCase();
+       }
+       
+       System.out.println("Did the driver cause any accident(s) within the last two years?(yes or no)");
+       accident = scan.next().toUpperCase();
+       while (!accident.equals("YES") && !accident.equals("NO"))
+       {
+       	System.out.println("Invalid choice.\nDid the driver cause any accident(s) within the last two years?(yes or no)");
+       	accident = scan.next().toUpperCase();
+       }
+       
+       System.out.println("Does the driver have any outstanding ticket?(yes or no)");
+       outstandingTicket = scan.next().toUpperCase();
+       while (!outstandingTicket.equals("YES") && !outstandingTicket.equals("NO"))
+       {
+       	System.out.println("Invalid choice.\nDoes the driver have any outstanding ticket?(yes or no)");
+       	outstandingTicket = scan.next().toUpperCase();
+       }
+       
+       boolean status;
+       if (policerecord.equals("YES") || accident.equals("YES") || outstandingTicket.equals("YES")) {
+           System.out.println("Application Denied!! You need to change the proposed driver with 5-10 business days\n");
+           System.out.println("Would you like to change the proposed driver? (yes or no)\n");
+           String driverChange = scan.nextLine();
+           if (driverChange.equals("yes")) {
+           	System.out.println("The applicant will have to change the proposed driver within 5 to 10 business days,"
+           			+ "\n otherwise, the application will be denied.");
+           	status = false;
+           }
+           else
+           {
+           	System.out.println("Application denied");
+           	status = false;
+           }
+       } else {
+           System.out.println("Red Plate Permit Approved");
+           status = true;
+           //Generates new PPV License to current applicant
+           PPVLicense ppv = new PPVLicense(applicant.getTrn(), ppvLicense, today, today.plusYears(4), applicantAddress.getParish());
+           System.out.println("\nCongratulations");
+           System.out.println("PPV License has been assigned to applicant!");
+           System.out.println("-----PPV License Details-----\n");
+           ppv.toString();
+           
+           
+           try (FileWriter writer = new FileWriter("ppv_records.csv", true)) {
+               writer.append(ppv.toCSV());
+               writer.append("\n");
+           } catch (IOException e) {
+               System.out.println("An error occurred while saving the ppv license.");
+               e.printStackTrace();
+           }
+           
+           ppvNum++;
+           SaveCount("ppvCount.txt", ppvNum);
+           
+           try (FileWriter writer = new FileWriter("driver_records.csv", true)) {
+               writer.append(applicant.toCSV());
+               writer.append("\n");
+           } catch (IOException e) {
+               System.out.println("An error occurred while saving the driver records.");
+               e.printStackTrace();
+           }
+       }
+       
+       
+       if (status == true)
+       {
+       	applicantResult = "Passed";
+       }
+       else
+       {
+       	applicantResult = "Failed";
+       }
+       
+       System.out.println("-----General Application Details-----");
+       System.out.println("Date of Application " + today);
+       System.out.println("Applicant Status: " + applicantResult);
+       System.out.println("\n");
+       System.out.println("-----Application Personal Information-----");
+       applicant.Info();
+       System.out.println("\n");
+       System.out.println("-----Interview Details-----");
+       System.out.println("Police record?:" + policerecord );
+       System.out.println("Accident(s)? " + accident);
+       System.out.println("Outstanding tickets?:" + outstandingTicket);
+       System.out.println("\n");
+   }
+   
+   
+   private static void UpdateApplication()
+   {
+   	System.out.println("-----Edit Applicant Information-----\n");
+   	System.out.println("Please enter applicant trn: ");
+		trnInput = scan.nextInt();
+		while (String.valueOf(trnInput).length() != 9)
+		{
+			System.out.println("Invalid TRN. TRN must contain 9 digits");
+			trnInput = scan.nextInt(); 
+		}
+		result = searchDriverByTrn(filePath2, trnInput);
+		if (result != null) {
+           System.out.println("Found applicant record");
+           System.out.println("Available information to edit below");
+           System.out.println("1 - First Name, 2 - Last Name");
+           System.out.println("Please enter an option:");
+           option = scan.nextInt();
+           while (option <=0 || option > 2)
+           {
+           	System.out.println("Invalid input.");
+           	System.out.println("Available information to edit below");
+               System.out.println("1 - First Name, 2 - Last Name");
+               System.out.println("Please enter an option: ");
+               option = scan.nextInt();
+           }
+          
+           System.out.println("Enter new information: ");
+           newInfo = scan.next();
+           
+           EditInformation("driver_records.csv",trnInput,option,newInfo);
+           System.out.println("Applicant information has successfully changed");
+           
+		}
+		else
+		{
+			System.out.println("Applicant not found");
+		}
+   }
+   
+   
+   private static void DeleteApplication()
+   {
+   	System.out.println("-----Delete Applicant Information-----\n");
+   	System.out.println("Please enter applicant trn: ");
+		trnInput = scan.nextInt();
+		while (String.valueOf(trnInput).length() != 9)
+		{
+			System.out.println("Invalid TRN. TRN must contain 9 digits");
+			trnInput = scan.nextInt(); 
+		}
+		result = searchDriverByTrn(filePath2, trnInput);
+		if (result != null) {
+			System.out.println("Application record found");
+			DeleteTrn("driver_records.csv", trnInput);
+		}
+		else
+		{
+			System.out.println("Applicant record not found");
+		}
+   	
+   }
+      
+   private static void ViewAllDrivingRecords(String X) {
+   	try (BufferedReader reader = new BufferedReader(new FileReader(X))) {
+           String line;
+
+           System.out.println("----- View All PPV Records -----");
+
+           // Read the file line by line
+           while ((line = reader.readLine()) != null) {
+               // Split the line into fields based on a delimiter (e.g., comma)
+               String[] fields = line.split(",");
+
+               // Ensure the expected number of fields are present
+               if (fields.length >= 5) { // Adjusted to suit PPV record structure
+                   System.out.println("TRN: " + fields[0]);
+                   System.out.println("Badge Number: " + fields[1]);
+                   System.out.println("Badge Issue Date: " + fields[2]);
+                   System.out.println("Badge Due Date: " + fields[3]);
+                   System.out.println("Badge Parish: " + fields[4]);
+                   System.out.println("-------------------------");
+               } else {
+                   // Handle malformed lines
+                   System.out.println("Invalid record: " + line);
+               }
+           }
+       } catch (IOException e) {
+           System.out.println("Error reading the PPV records: " + e.getMessage());
+           e.printStackTrace();
+       }
+   }
+       
+   private static void ViewDrivingRecord(String filePath, int targetTRN) {
+       try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+           String line;
+
+           System.out.println("----- Search PPV Record by TRN -----");
+
+           boolean recordFound = false; // Flag to indicate if a matching record is found
+
+           // Read the file line by line
+           while ((line = reader.readLine()) != null) {
+               // Split the line into fields based on a delimiter (e.g., comma)
+               String[] fields = line.split(",");
+
+               // Ensure the expected number of fields are present
+               if (fields.length >= 5) { // Adjusted to suit PPV record structure
+                   int trn = Integer.parseInt(fields[0].trim()); // Assuming TRN is in the first column
+
+                   // Check if the TRN matches the target TRN
+                   if (trn == targetTRN) {
+                       System.out.println("TRN: " + fields[0]);
+                       System.out.println("Badge Number: " + fields[1]);
+                       System.out.println("Badge Issue Date: " + fields[2]);
+                       System.out.println("Badge Due Date: " + fields[3]);
+                       System.out.println("Badge Parish: " + fields[4]);
+                       System.out.println("-------------------------");
+
+                       recordFound = true; // Update flag
+                       break; // Stop searching after finding the first match
+                   }
+               } else {
+                   // Handle malformed lines
+                   System.out.println("Invalid record: " + line);
+               }
+           }
+
+           if (!recordFound) {
+               System.out.println("No PPV record found for TRN: " + targetTRN);
+           }
+       } catch (IOException e) {
+           System.out.println("Error reading the PPV records: " + e.getMessage());
+           e.printStackTrace();
+       } catch (NumberFormatException e) {
+           System.out.println("Invalid TRN format in the file.");
+           e.printStackTrace();
+       }
+   }
+   
+   
+   
     
     //Search TRN Method
     
@@ -457,125 +975,6 @@ public class Main {
                 return y;  // Default case if x is out of range (1-14)
         }
     }
-
-    
-    
-    //Methods for Ticket Class
-    
-    
-    // Method to load the ticket number from the file
-private static int LoadTicketNum(String filepath) {
-        // Create a File object
-        File file = new File(filepath);
-
-        // Check if the file exists
-        if (file.exists()) {
-            try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
-                // Read the file content (ticket number is expected to be on a single line)
-                String line = reader.readLine();
-                if (line != null) {
-                    return Integer.parseInt(line); // Return the ticket number from the file
-                }
-            } catch (IOException e) {
-                System.out.println("An error occurred while reading the file.");
-                e.printStackTrace();
-            }
-        } else {
-            // If file doesn't exist, create it and initialize the ticket number to 0
-            try {
-                if (file.createNewFile()) {
-                    System.out.println("File created: " + file.getName());
-                    SaveCount(filepath, 7);
-                }
-            } catch (IOException e) {
-                System.out.println("An error occurred while creating the file.");
-                e.printStackTrace();
-            }
-        }
-
-        return 7; // Return default value if the file was not found or read fails
-    }
-
-private static int LoadPPV(String filepath) {
-    // Create a File object
-    File file = new File(filepath);
-
-    // Check if the file exists
-    if (file.exists()) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
-            // Read the file content (ticket number is expected to be on a single line)
-            String line = reader.readLine();
-            if (line != null) {
-                return Integer.parseInt(line); // Return the ticket number from the file
-            }
-        } catch (IOException e) {
-            System.out.println("An error occurred while reading the file.");
-            e.printStackTrace();
-        }
-    } else {
-        // If file doesn't exist, create it and initialize the ppv number to 1003
-        try {
-            if (file.createNewFile()) {
-                System.out.println("File created: " + file.getName());
-                
-                SaveCount("ppvCount.txt", 1003);
-            }
-        } catch (IOException e) {
-            System.out.println("An error occurred while creating the file.");
-            e.printStackTrace();
-        }
-    }
-
-    return 1003; // Return default value if the file was not found or read fails
-}
-
-    // Method to save the ticket number back to the file
-    private static void SaveCount(String filepath, int ticketNum) {
-        try (FileWriter writer = new FileWriter(filepath)) {
-            // Write the ticket number to the file
-            writer.write(String.valueOf(ticketNum));
-        } catch (IOException e) {
-            System.out.println("An error occurred while saving the counter");
-            e.printStackTrace();
-        }
-    }
-    
-    
-    
-    private static void DefaultTickets(String placeholder, ArrayList<Ticket> parameterList) {
-        File file = new File(placeholder);
-
-        // If the file doesn't exist, create it and add default drivers
-        try {
-            if (file.createNewFile()) {
-                System.out.println("File created: " + file.getName());
-                System.out.println("Default Tickets Successfully Created");
-                
-               // Write the drivers to the file
-            try (FileWriter writer = new FileWriter(file, true)) {
-                for (Ticket tickets : parameterList) {
-                    writer.write(tickets.toCSV());  // Get the CSV string and write it to the file
-                    writer.append("\n");  // Append a newline after each driver's record
-                }
-              } //end second try
-              catch (IOException e) {
-                System.out.println("An error occurred while saving the driver info.");
-                e.printStackTrace();
-              }//end catch  
-                
-                
-                
-            }//endif
-
-           
-        }//end first try 
-        catch (IOException e) {
-            System.out.println("An error occurred while creating the file.");
-            e.printStackTrace();
-        }
-    }// end DefaultTickets method
-    
-    
     
     private static void EditFineAmt(String filePath, int searchTrn, int ticketNum, int newFineAmt, String newPaymentStatus) {
         List<String> lines = new ArrayList<>();
@@ -626,6 +1025,36 @@ private static int LoadPPV(String filepath) {
             System.out.println("No matching record found for TRN: " + searchTrn + " and TicketNum: " + ticketNum);
         }
     }
+    
+    private static void ShowWarrant(String filePath3, int trn1) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath3))) {
+            String line;
+
+            // Read each line in the file
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+
+                if (parts.length > 14) { // Ensure there are enough columns (TRN, warrant, etc.)
+                    int trn = Integer.parseInt(parts[0].trim()); // Get TRN from the 1st column (index 0)
+                    boolean warrant = Boolean.parseBoolean(parts[14].trim()); // Get the warrant from the 15th column (index 14)
+
+                    // Filter by TRN and warrant being true
+                    if (trn == trn1 && warrant) {
+                        System.out.println(line); // Output the matching line
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid data in TRN or warrant: " + e.getMessage());
+        }
+    }
+    
+    
+    
+    
+    
     //Searches Driver Ticket Due Date
     private static Integer OnlinePayment(String filePath, int searchTrn, int ticketNum)
     {
@@ -657,6 +1086,7 @@ private static int LoadPPV(String filepath) {
     }
     
     private static void PayTicketOnline() {
+    	System.out.println("-----Online Ticket Payment System-----");
 	    System.out.println("Please enter the ticket number: ");
 		ticketNumInput = scan.nextInt();
 		if (OnlinePayment("ticket_records.csv", trnInput, ticketNumInput) == null)
@@ -690,9 +1120,7 @@ private static int LoadPPV(String filepath) {
 			}
 			
 		}
-	
-		
-			}
+	}
     
     private static void ShowPastDueDates(String filePath3, int trn1) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath3))) {
@@ -728,6 +1156,7 @@ private static int LoadPPV(String filepath) {
     }
     
     private static void ShowNotPastDueDates(String filePath3, int trn1) {
+    	System.out.println("-----Tickets that have not passed 21 days and are Unpaid-----");
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath3))) {
             String line;
 
@@ -759,7 +1188,43 @@ private static int LoadPPV(String filepath) {
             System.out.println("Invalid data in TRN or numeric fields: " + e.getMessage());
         }
     }
+    
+    
+    private static void ShowDriverPastTickets(String filePath3, int trn1) {
+    	System.out.println("-----Ticket are Sorted in ascending order by Ticket Issue Date-----");
+        List<String[]> matchingTickets = new ArrayList<>();
 
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath3))) {
+            String line;
+
+            // Read each line in the file
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+
+                if (parts.length > 6) { // Ensure there are enough columns
+                    int trn = Integer.parseInt(parts[0].trim()); // Get TRN from the 1st column (index 0)
+
+                    // Filter by TRN
+                    if (trn == trn1) {
+                        matchingTickets.add(parts); // Add the matching ticket to the list
+                    }
+                }
+            }
+
+            // Sort the tickets alphabetically based on ticketDueDate (column index 3)
+            Collections.sort(matchingTickets, Comparator.comparing(o -> o[3].trim()));
+
+            // Display the sorted tickets
+            for (String[] ticket : matchingTickets) {
+                System.out.println(String.join(",", ticket));
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid data in TRN or numeric fields: " + e.getMessage());
+        }
+    }
+    
     
 private static void ShowAllOutstandingTicket(String filePath3) {
         
@@ -947,331 +1412,7 @@ private static void ShowAllOutstandingTicket(String filePath3) {
     }
     
     
-    private static void CreateApplication()
-    {
-    	System.out.println("-----Create an Application-----\n");
-
-		Driver applicant = new Driver();
-		Name applicantName = new Name();
-		Address applicantAddress = new Address();
-		
-		System.out.println("Please enter trn: ");
-		applicant.setTrn(scan.nextInt());
-		
-		scan.nextLine();
-		while (String.valueOf(applicant.getTrn()).length() != 9)
-		{
-			System.out.println("Invalid TRN. TRN must contain 9 digits");
-			applicant.setTrn(scan.nextInt());
-			scan.nextLine();
-		}
-		
-		
-		System.out.println("\nEnter first name: ");
-        applicantName.setFirstName(scan.next());
-        
-        System.out.println("Enter last name: ");
-        applicantName.setLastName(scan.next());
-        
-        // Set the driver's name using the Name object
-        applicant.setName(applicantName);
-        
-        LocalDate dob = null;
-        
-        // Ensure we read a full line for the date of birth
-        
-        // Loop until valid date is entered
-        while (dob == null) {
-            try {
-                dob = LocalDate.parse(dobString, DateTimeFormatter.ISO_LOCAL_DATE);  // Parse the date string
-            } catch (Exception e) {
-                System.out.println("Enter date of birth (YYYY-MM-DD format):");
-                dobString = scan.nextLine();  // Capture new input if invalid date
-            }
-        }
-        
-        applicant.setDob(dob); 
-        
-        
-        System.out.println("Enter the applicant's street number: ");
-        applicantAddress.setStreetNum(scan.nextInt());
-        scan.nextLine();  // This clears the buffer after reading the integer
-
-        System.out.println("Enter the applicant's street name: ");
-        applicantAddress.setStreetName(scan.nextLine());
-        
-        System.out.println("\n");
-        System.out.println("1 - Kingston, 2 - St Andrew, 3 - St Thomas,  4 - Portland, 5 - St Mary,");
-        System.out.println("\n6 - St Ann, 7 - Trelawny, 8 - St James, 9 - Hanover, 10 - Westermoreland,");
-        System.out.println("\n11 - St Elizabeth, 12 - Manchester, 13 - Clarendon, 14 - St Catherine");
-        System.out.println("\nEnter the applicant's parish (1-14): ");
-        option = scan.nextInt();
-        while (option <= 0 || option >14)
-		{
-        	System.out.println("\n");
-			System.out.println("Invalid Parish. Please enter valid parish from options");
-			System.out.println("\n1 - Kingston, 2 - St Andrew, 3 - St Thomas,  4 - Portland, 5 - St Mary,");
-			System.out.println("\n6 - St Ann, 7 - Trelawny, 8 - St James, 9 - Hanover, 10 - Westermoreland,");
-			System.out.println("\n11 - St Elizabeth, 12 - Manchester, 13 - Clarendon, 14 - St Catherine");
-			System.out.println("\nEnter the applicant's parish (1-14): ");
-			option = scan.nextInt();
-			scan.nextLine();
-		}
-        applicantAddress.setParish(ValidateParish(parishInput,option));
-        applicant.setAddr(applicantAddress);
-		
-        System.out.println("Enter your email address: ");
-        applicant.setEmail(scan.next());
-        
-        System.out.println("Enter your phone number: ");
-        applicant.setContactNum(scan.next());
-        
-        System.out.println("Please enter gender from: ");
-        System.out.println("Options: Male, Female, or Other");
-        System.out.println("Enter a option: ");
-        applicant.setGender(scan.next().toUpperCase());
-        while (!applicant.getGender().equals("MALE") && !applicant.getGender().equals("FEMALE") && !applicant.getGender().equals("OTHER"))
-        {
-        	System.out.println("Invalid choice. Please enter correct gender from:"
-        			+ "\nMale, Female, or Other"
-        			+ "\nEnter a option: ");
-        	applicant.setGender(scan.next().toUpperCase());
-        }
-        
-        
-        System.out.println("Does the driver have a negative police record?(yes or no)");
-        policerecord = scan.next().toUpperCase();
-        while (!policerecord.equals("YES") && !policerecord.equals("NO"))
-        {
-        	System.out.println("Invalid choice. Does the driver have a negative police record?(yes or no)");
-        	policerecord = scan.next().toUpperCase();
-        }
-        
-        System.out.println("Did the driver cause any accident(s) within the last two years?(yes or no)");
-        accident = scan.next().toUpperCase();
-        while (!accident.equals("YES") && !accident.equals("NO"))
-        {
-        	System.out.println("Invalid choice.\nDid the driver cause any accident(s) within the last two years?(yes or no)");
-        	accident = scan.next().toUpperCase();
-        }
-        
-        System.out.println("Does the driver have any outstanding ticket?(yes or no)");
-        outstandingTicket = scan.next().toUpperCase();
-        while (!outstandingTicket.equals("YES") && !outstandingTicket.equals("NO"))
-        {
-        	System.out.println("Invalid choice.\nDoes the driver have any outstanding ticket?(yes or no)");
-        	outstandingTicket = scan.next().toUpperCase();
-        }
-        
-        boolean status;
-        if (policerecord.equals("YES") || accident.equals("YES") || outstandingTicket.equals("YES")) {
-            System.out.println("Application Denied!! You need to change the proposed driver with 5-10 business days\n");
-            System.out.println("Would you like to change the proposed driver? (yes or no)\n");
-            String driverChange = scan.nextLine();
-            if (driverChange.equals("yes")) {
-            	System.out.println("The applicant will have to change the proposed driver within 5 to 10 business days,"
-            			+ "\n otherwise, the application will be denied.");
-            	status = false;
-            }
-            else
-            {
-            	System.out.println("Application denied");
-            	status = false;
-            }
-        } else {
-            System.out.println("Red Plate Permit Approved");
-            status = true;
-            //Generates new PPV License to current applicant
-            PPVLicense ppv = new PPVLicense(applicant.getTrn(), ppvLicense, today, today.plusYears(4), applicantAddress.getParish());
-            System.out.println("\nCongratulations");
-            System.out.println("PPV License has been assigned to applicant!");
-            System.out.println("-----PPV License Details-----\n");
-            ppv.toString();
-            
-            
-            try (FileWriter writer = new FileWriter("ppv_records.csv", true)) {
-                writer.append(ppv.toCSV());
-                writer.append("\n");
-            } catch (IOException e) {
-                System.out.println("An error occurred while saving the ppv license.");
-                e.printStackTrace();
-            }
-            
-            ppvNum++;
-            SaveCount("ppvCount.txt", ppvNum);
-            
-            try (FileWriter writer = new FileWriter("driver_records.csv", true)) {
-                writer.append(applicant.toCSV());
-                writer.append("\n");
-            } catch (IOException e) {
-                System.out.println("An error occurred while saving the driver records.");
-                e.printStackTrace();
-            }
-        }
-        
-        
-        if (status == true)
-        {
-        	applicantResult = "Passed";
-        }
-        else
-        {
-        	applicantResult = "Failed";
-        }
-        
-        System.out.println("-----General Application Details-----");
-        System.out.println("Date of Application " + today);
-        System.out.println("Applicant Status: " + applicantResult);
-        System.out.println("\n");
-        System.out.println("-----Application Personal Information-----");
-        applicant.Info();
-        System.out.println("\n");
-        System.out.println("-----Interview Details-----");
-        System.out.println("Police record?:" + policerecord );
-        System.out.println("Accident(s)? " + accident);
-        System.out.println("Outstanding tickets?:" + outstandingTicket);
-        System.out.println("\n");
-    }
     
-    
-    private static void UpdateApplication()
-    {
-    	System.out.println("-----Edit Applicant Information-----\n");
-    	System.out.println("Please enter applicant trn: ");
-		trnInput = scan.nextInt();
-		while (String.valueOf(trnInput).length() != 9)
-		{
-			System.out.println("Invalid TRN. TRN must contain 9 digits");
-			trnInput = scan.nextInt(); 
-		}
-		result = searchDriverByTrn(filePath2, trnInput);
-		if (result != null) {
-            System.out.println("Found applicant record");
-            System.out.println("Available information to edit below");
-            System.out.println("1 - First Name, 2 - Last Name");
-            System.out.println("Please enter an option:");
-            option = scan.nextInt();
-            while (option <=0 || option > 2)
-            {
-            	System.out.println("Invalid input.");
-            	System.out.println("Available information to edit below");
-                System.out.println("1 - First Name, 2 - Last Name");
-                System.out.println("Please enter an option: ");
-                option = scan.nextInt();
-            }
-           
-            System.out.println("Enter new information: ");
-            newInfo = scan.next();
-            
-            EditInformation("driver_records.csv",trnInput,option,newInfo);
-            System.out.println("Applicant information has successfully changed");
-            
-		}
-		else
-		{
-			System.out.println("Applicant not found");
-		}
-    }
-    
-    
-    private static void DeleteApplication()
-    {
-    	System.out.println("-----Delete Applicant Information-----\n");
-    	System.out.println("Please enter applicant trn: ");
-		trnInput = scan.nextInt();
-		while (String.valueOf(trnInput).length() != 9)
-		{
-			System.out.println("Invalid TRN. TRN must contain 9 digits");
-			trnInput = scan.nextInt(); 
-		}
-		result = searchDriverByTrn(filePath2, trnInput);
-		if (result != null) {
-			System.out.println("Application record found");
-			DeleteTrn("driver_records.csv", trnInput);
-		}
-		else
-		{
-			System.out.println("Applicant record not found");
-		}
-    	
-    }
-       
-    private static void ViewAllDrivingRecords(String X) {
-    	try (BufferedReader reader = new BufferedReader(new FileReader(X))) {
-            String line;
-
-            System.out.println("----- View All PPV Records -----");
-
-            // Read the file line by line
-            while ((line = reader.readLine()) != null) {
-                // Split the line into fields based on a delimiter (e.g., comma)
-                String[] fields = line.split(",");
-
-                // Ensure the expected number of fields are present
-                if (fields.length >= 5) { // Adjusted to suit PPV record structure
-                    System.out.println("TRN: " + fields[0]);
-                    System.out.println("Badge Number: " + fields[1]);
-                    System.out.println("Badge Issue Date: " + fields[2]);
-                    System.out.println("Badge Due Date: " + fields[3]);
-                    System.out.println("Badge Parish: " + fields[4]);
-                    System.out.println("-------------------------");
-                } else {
-                    // Handle malformed lines
-                    System.out.println("Invalid record: " + line);
-                }
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading the PPV records: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
-        
-    private static void ViewDrivingRecord(String filePath, int targetTRN) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
-            String line;
-
-            System.out.println("----- Search PPV Record by TRN -----");
-
-            boolean recordFound = false; // Flag to indicate if a matching record is found
-
-            // Read the file line by line
-            while ((line = reader.readLine()) != null) {
-                // Split the line into fields based on a delimiter (e.g., comma)
-                String[] fields = line.split(",");
-
-                // Ensure the expected number of fields are present
-                if (fields.length >= 5) { // Adjusted to suit PPV record structure
-                    int trn = Integer.parseInt(fields[0].trim()); // Assuming TRN is in the first column
-
-                    // Check if the TRN matches the target TRN
-                    if (trn == targetTRN) {
-                        System.out.println("TRN: " + fields[0]);
-                        System.out.println("Badge Number: " + fields[1]);
-                        System.out.println("Badge Issue Date: " + fields[2]);
-                        System.out.println("Badge Due Date: " + fields[3]);
-                        System.out.println("Badge Parish: " + fields[4]);
-                        System.out.println("-------------------------");
-
-                        recordFound = true; // Update flag
-                        break; // Stop searching after finding the first match
-                    }
-                } else {
-                    // Handle malformed lines
-                    System.out.println("Invalid record: " + line);
-                }
-            }
-
-            if (!recordFound) {
-                System.out.println("No PPV record found for TRN: " + targetTRN);
-            }
-        } catch (IOException e) {
-            System.out.println("Error reading the PPV records: " + e.getMessage());
-            e.printStackTrace();
-        } catch (NumberFormatException e) {
-            System.out.println("Invalid TRN format in the file.");
-            e.printStackTrace();
-        }
-    }
 
     
         
@@ -1365,245 +1506,203 @@ private static void ShowAllOutstandingTicket(String filePath3) {
     }
 }
     
-    private static void TIOCS()
+    private static void OptionProcessingOfficer()
     {
-    	System.out.print("Welcome to the Ticketing Issuing and Offender Checking System (TIOCS)"
-    			+ "\nHow may I assist?"
-    			+ "\n1 - JCF Officer"
-    			+ "\n2 - Driver"
-    			+ "\n3 - Exit"
-    			+ "\nEnter an option:");
-    	
-
-    	option = scan.nextInt();
-    	
-    	switch (option)
-    	{
-    	//JCF Officer Option
-    	case 1:
-    		System.out.println("Please enter the admin password:");
-    		passcode = scan.next();
-    		if (passcode.equals(adminPass))
-    		{
-    			System.out.println("1- Add new ticket to offender (driver)"
-    					+ "\n2 - View current ticketing information"
-    					+ "\n3 - Check status of a driver in the system"
-    					+ "\n4 - View all outstanding tickets (sorted by parish)"
-    					+ "\nEnter an option:");
-    			
-    			option = scan.nextInt();
-    			switch (option)
-    			{
-    			case 1:
-    				TIOCSAddTicket();
-    				
-    				break;//break statement within inner loop
-    			case 2:
-    				
-    				
-    				TIOCSViewCurrentTicket();
-    				break;//break statement within inner loop
-    				
-    				
-    			case 3:    				
-    				TIOCSCheckDriverStatus();//break statement within inner loop
-    				break;
-    			case 4:
-					System.out.println("Unfortunately the feature you selected is not available at this time");
-					break;
-    				
-    				default:
-    				System.out.println("Invalid Input");
-    					break;
-    				
-    				
-    				
-    			}}//end of if statement
-    		else {
-    			System.out.println("Invalid password");
-    		}
-    			
-    	break;//end of main case
-    	case 2:
-    		System.out.println("Enter driver trn number: ");
-			trnInput = scan.nextInt();
-			while (String.valueOf(trnInput).length() != 9)
-			 {
-			    System.out.println("TRN must be of length 9 digits. Please try again.");
-			    System.out.println("Enter trn:");
-			    trnInput = scan.nextInt();
-			 }
-			result = searchDriverByTrn("driver_records.csv", trnInput);
-			if (result != null) 
+    	System.out.println("Enter admin pass");
+		passcode = scan.next();
+		if (passcode.equals(adminPass))
+		{
+			System.out.println("1: Create an Application");
+			System.out.println("2: Update an Application");
+			System.out.println("3: Delete an Application");
+			System.out.println("4: View a Driver's Driving Records");
+			System.out.println("5: View All Drivers with PPV License");
+			System.out.println("6: View Applicant outstanding tickets");
+			System.out.println("7: Exit");
+			option = scan.nextInt();
+			while (option <=0  || option > 7 )
 			{
-				System.out.println("Driver record found");
-				System.out.println("1 – Check for all past tickets for driver (ascending alphabetical order) "
+				System.out.println("Invalid Input. Please enter a valid option"
+						+ "Enter an option: ");
+				option = scan.nextInt();
+			}
+			switch (option)
+			{
+				case 1:
+					CreateApplication();
+				break;
+				case 2:
+					UpdateApplication();
+				break;
+				case 3:
+					DeleteApplication();
+				break;
+				case 4:
+					System.out.println("Enter driver trn number: ");
+					trnInput = scan.nextInt();
+					while (String.valueOf(trnInput).length() != 9)
+					  {
+					    System.out.println("TRN must be of length 9 digits. Please try again.");
+					    System.out.println("Enter trn:");
+					    trnInput = scan.nextInt();
+					  }
+					result = searchDriverByTrn("driver_records.csv", trnInput);
+					if (result != null) 
+					{
+						ViewDrivingRecord("ppv_records.csv",trnInput);
+					}
+					else
+					{
+						System.out.println("Applicant not found");
+					}
+					
+				break;
+				case 5:
+					ViewAllDrivingRecords("ppv_records.csv");
+				break;
+				case 6:
+					System.out.println("Enter driver trn number: ");
+					trnInput = scan.nextInt();
+					while (String.valueOf(trnInput).length() != 9)
+					  {
+					    System.out.println("TRN must be of length 9 digits. Please try again.");
+					    System.out.println("Enter trn:");
+					    trnInput = scan.nextInt();
+					  }
+					result = searchDriverByTrn(filePath2, trnInput);
+					if (result != null) 
+					{
+						ShowPastDueDates(filePath3,trnInput);
+					}
+					else
+					{
+						System.out.println("Applicant not found");
+					}
+				break;
+				case 7:
+					state = false;
+					break;
+				
+			}
+		}
+		else
+		{
+			System.out.println("Invalid password");
+		}
+    }
+    
+    private static void OptionJCFOfficer()
+    {
+    	System.out.println("Please enter the admin password:");
+		passcode = scan.next();
+		if (passcode.equals(adminPass))
+		{
+			System.out.println("1- Add new ticket to offender (driver)"
+					+ "\n2 - View current ticketing information"
+					+ "\n3 - Check status of a driver in the system"
+					+ "\n4 - View all outstanding tickets (sorted by parish)"
+					+ "\nEnter an option:");
+			
+			option = scan.nextInt();
+			switch (option)
+			{
+			case 1:
+				TIOCSAddTicket();
+				
+				break;//break statement within inner loop
+			case 2:
+				
+				
+				TIOCSViewCurrentTicket();
+				break;//break statement within inner loop
+				
+				
+			case 3:    				
+				TIOCSCheckDriverStatus();//break statement within inner loop
+				break;
+			case 4:
+				System.out.println("Unfortunately the feature you selected is not available at this time");
+				break;
+				
+				default:
+				System.out.println("Invalid Input");
+					break;
+				
+				
+				
+			}}//end of if statement
+		else {
+			System.out.println("Invalid password");
+		}
+			
+    }
+    
+    
+    
+    private static void OptionDriver()
+    {
+    	System.out.println("Enter driver trn number: ");
+		trnInput = scan.nextInt();
+		while (String.valueOf(trnInput).length() != 9)
+		 {
+		    System.out.println("TRN must be of length 9 digits. Please try again.");
+		    System.out.println("Enter trn:");
+		    trnInput = scan.nextInt();
+		 }
+		result = searchDriverByTrn("driver_records.csv", trnInput);
+		if (result != null) 
+		{
+			System.out.println("Driver record found");
+			System.out.println("1 – Check for all past tickets for driver (ascending alphabetical order) "
+    				+ "\n2 – Make online payment for tickets (that are issued but not past due)"
+    				+ "\n3 – Check for past-due tickets. Tickets which have passed the 21 days for payment will reflect a court details. "
+    				+ "\n4 - View ticket(s) that have not passed due based on their TRN"
+    				+ "\n5 – Check where there is a warrant issued and display which police station they should turn themselves in."
+    				+ "Enter an option:");
+            option = scan.nextInt();
+            //while loop validate the option selected
+            while (option <=0 || option > 5)
+            {
+            	System.out.println("Invalid input.");
+            	System.out.println("1 – Check for all past tickets for driver (ascending order based on issueDate) "
 	    				+ "\n2 – Make online payment for tickets (that are issued but not past due)"
 	    				+ "\n3 – Check for past-due tickets. Tickets which have passed the 21 days for payment will reflect a court details. "
 	    				+ "\n4 - View ticket(s) that have not passed due based on their TRN"
 	    				+ "\n5 – Check where there is a warrant issued and display which police station they should turn themselves in."
 	    				+ "Enter an option:");
-	            option = scan.nextInt();
-	            //while loop validate the option selected
-	            while (option <=0 || option > 5)
-	            {
-	            	System.out.println("Invalid input.");
-	            	System.out.println("1 – Check for all past tickets for driver (ascending alphabetical order) "
-		    				+ "\n2 – Make online payment for tickets (that are issued but not past due)"
-		    				+ "\n3 – Check for past-due tickets. Tickets which have passed the 21 days for payment will reflect a court details. "
-		    				+ "\n4 - View ticket(s) that have not passed due based on their TRN"
-		    				+ "\n5 – Check where there is a warrant issued and display which police station they should turn themselves in."
-		    				+ "Enter an option:");
-	                option = scan.nextInt();
-	            }
-	            switch (option)
-	            {
-	            case 1:
-	            	//ShowDriverPastTickets(String filePath3, int trn1)
-	            	break;
-	            case 2:
-	            	PayTicketOnline();
-	            	break;
-				case 3:
-					ShowPastDueDates("ticket_records.csv",trnInput);
-					break;
-				case 4: 
-					ShowNotPastDueDates("ticket_records.csv",trnInput);
-					break;
-				case 5:
-					//ShowWarrant("ticket_records",trnInput);
-					break;
+                option = scan.nextInt();
+            }
+            switch (option)
+            {
+            case 1:
+            	
+            	ShowDriverPastTickets("ticket_records.csv", trnInput);
+            	break;
+            case 2:
+            	
+            	PayTicketOnline();
+            	break;
+			case 3:
 				
-				}
-				}
-				else
-				{
-				System.out.println("Driver record not found");
-				}
-    	break;
-    	case 3:
-    		state = false;
-    	break;	
-    	default:
-    		System.out.println("Invalid Option");
-    	break;
-    	}
-    	
-    	System.out.println("\n");
-    	
-    }//end of TIOCS
-    
-    private static void RPLTS()
-    {
-    	System.out.println("***Red Plate Licensing System***");
-		System.out.println("\n");
-		System.out.println("1 - Processing Officer"
-				+ "\n2 - Driver"
-				+ "\n3 - Exit"
-				+ "\nEnter an option:");
-		option = scan.nextInt();
-		while (option <=0  || option > 3 )
-		{
-			System.out.println("Invalid Input. Please enter a valid option"
-					+ "Enter an option: ");
-			option = scan.nextInt();
-		}
-		switch (option)
-		{
-		case 1:
-			System.out.println("Enter admin pass");
-			passcode = scan.next();
-			if (passcode.equals(adminPass))
-    		{
-				System.out.println("1: Create an Application");
-				System.out.println("2: Update an Application");
-				System.out.println("3: Delete an Application");
-				System.out.println("4: View a Driver's Driving Records");
-				System.out.println("5: View All Drivers with PPV License");
-				System.out.println("6 - View Applicant outstanding tickets");
-				System.out.println("7: Exit");
-				option = scan.nextInt();
-				while (option <=0  || option > 7 )
-				{
-					System.out.println("Invalid Input. Please enter a valid option"
-							+ "Enter an option: ");
-					option = scan.nextInt();
-				}
-				switch (option)
-				{
-					case 1:
-						CreateApplication();
-					break;
-					case 2:
-						UpdateApplication();
-					break;
-					case 3:
-						DeleteApplication();
-					break;
-					case 4:
-						System.out.println("Enter driver trn number: ");
-						trnInput = scan.nextInt();
-						while (String.valueOf(trnInput).length() != 9)
-						  {
-						    System.out.println("TRN must be of length 9 digits. Please try again.");
-						    System.out.println("Enter trn:");
-						    trnInput = scan.nextInt();
-						  }
-						result = searchDriverByTrn("driver_records.csv", trnInput);
-						if (result != null) 
-						{
-							ViewDrivingRecord("ppv_records.csv",trnInput);
-						}
-						else
-						{
-							System.out.println("Applicant not found");
-						}
-						
-					break;
-					case 5:
-						ViewAllDrivingRecords("ppv_records.csv");
-					break;
-					case 6:
-						System.out.println("Enter driver trn number: ");
-						trnInput = scan.nextInt();
-						while (String.valueOf(trnInput).length() != 9)
-						  {
-						    System.out.println("TRN must be of length 9 digits. Please try again.");
-						    System.out.println("Enter trn:");
-						    trnInput = scan.nextInt();
-						  }
-						result = searchDriverByTrn(filePath2, trnInput);
-						if (result != null) 
-						{
-							ShowPastDueDates(filePath3,trnInput);
-						}
-						else
-						{
-							System.out.println("Applicant not found");
-						}
-					break;
-					case 7:
-						state = false;
-						break;
-					
-				}
+				ShowPastDueDates("ticket_records.csv",trnInput);
+				break;
+			case 4:
 				
-		    	
-    		}
+				ShowNotPastDueDates("ticket_records.csv",trnInput);
+				break;
+			case 5:
+				ShowWarrant("ticket_records.csv",trnInput);
+				break;
+			
+			}
+			}
 			else
 			{
-				System.out.println("Invalid password");
+			System.out.println("Driver record not found");
 			}
-			break;
-		case 2:
-			
-			break;
-		case 3:
-			state = false;
-		
-		}//end of switch statement
-		
-		
     }
+    
+    
+    
     
 }//end of Class Main
