@@ -21,7 +21,7 @@ public class Main {
     public static int ticketNum = 7;
     //PPV100000
     //PPV100001
-    public static int ppvNum = 100000;
+    public static int ppvNum = 1003;
     public static String ppvLicense;
     public static int option;
     public static int license;
@@ -30,6 +30,7 @@ public class Main {
     public static String accident;
     public static String outstandingTicket;
     public static String applicantResult;
+    public static String newInfo;
     
     public static int trnInput;
     public static String parishInput;
@@ -53,6 +54,8 @@ public class Main {
     public static String ticketPayStatusInput = "Unpaid";
     public static boolean state = true;
     
+    public static String filePath5 = "ppv_records.csv";
+    public static String filePath4 = "ppvCount.txt";
     public static String filePath3 = "ticket_records.csv";
 	public static String filePath2 = "driver_records.csv";
     public static String filePath = "ticketCount.txt";
@@ -63,6 +66,7 @@ public class Main {
     	//Declaration of ArrayLists 
     	ArrayList<Driver> Drivers = new ArrayList<>();
     	ArrayList<Ticket> Tickets = new ArrayList<>();
+    	ArrayList<PPVLicense> PPVHolders = new ArrayList<>();
     	
 		//Default User 1
 		Name d1 = new Name("John", "Brown");
@@ -109,35 +113,49 @@ public class Main {
 		Tickets.add(defaultTic5);
 		Tickets.add(defaultTic6);
 		
-        
+		PPVLicense defaultPPV1 = new PPVLicense();
+		PPVHolders.add(defaultPPV1);
+		
 		//Default User 2
 		Name d2 = new Name("Mary", "Anderson");
 		Address a2 = new Address(12, "Redwood Lane", "St.Andrew");
 		Driver driver2 = new Driver(987654321, d2, LocalDate.parse("1995-08-15"),a2, "mary.anderson@gmail.com", "8761234567", "Female");
-
+		
+		PPVLicense defaultPPV2 = new PPVLicense(987654321,"PL1002",today,today.plusYears(4),"St Andrew");
+		PPVHolders.add(defaultPPV2);
+		
 		//Default User 3
 		Name d3 = new Name("Sashana","Blackwood");
 		Address a3 = new Address(88,"Stockforth Road","St.Thomas");
 		Driver driver3 = new Driver(100000000,d3, LocalDate.parse("2001-08-05"),a3, "sashana.blackwood@gmail.com", "8767252731", "Female");
 
+		//Default User 4 created from default constructor
+		Driver driver4 = new Driver();
+		
 		Drivers.add(driver1);
 		Drivers.add(driver2);
 		Drivers.add(driver3);
+		Drivers.add(driver4);
 		
 		
         
 
-        // Load ticket number from the file
-        ticketNum = LoadTicketNum(filePath);
+        // Load ticket number and ppvNum from respective files
+        ticketNum = LoadTicketNum("ticketCount.txt");
+        ppvNum = LoadPPV("ppvCount.txt");
+        
+        ppvLicense = String.format("PL%04d", ppvNum);
         
         
         
         
         
         
-        //Loads in the default users and tickets before the while loop starts
-        DefaultDrivers("driver_records.csv", Drivers);//
+        //Loads in the default users,tickets, ppvLicense before the while loop starts
+        DefaultDrivers("driver_records.csv", Drivers);
         DefaultTickets("ticket_records.csv", Tickets);
+        DefaultPPVLicense("ppv_records.csv", PPVHolders);
+        
         
         try 
         {
@@ -187,7 +205,41 @@ public class Main {
         }// end of public static void main
         
         
-  
+  //Methods for PPV License
+    
+    private static void DefaultPPVLicense(String filePath, ArrayList<PPVLicense> parameterList)
+    {
+    	File file = new File(filePath);
+
+        // If the file doesn't exist, create it and add default drivers
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+                
+               // Write the drivers to the file
+            try (FileWriter writer = new FileWriter(file, true)) {
+                for (PPVLicense ppv : parameterList) {
+                    writer.write(ppv.toCSV());  // Get the CSV string and write it to the file
+                    writer.append("\n");  
+                }
+              } //end second try
+              catch (IOException e) {
+                System.out.println("An error occurred while saving the PPV License info.");
+                e.printStackTrace();
+              }//end catch  
+                
+                
+                
+            }//endif
+
+           
+        }//end first try 
+        catch (IOException e) {
+            System.out.println("An error occurred while creating the file.");
+            e.printStackTrace();
+        }
+    	
+    }
 
 
 
@@ -257,6 +309,63 @@ public class Main {
         // Search for the TRN in the index
         return index.get(searchTrn); // Return the matching line, or null if not found
     }
+    
+    private static void EditInformation(String filePath, int trnToUpdate, int columnIndex, String newValue) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            List<String> lines = new ArrayList<>();
+            String line;
+
+            // Read all lines into a list
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+
+            // If the file is empty, there's nothing to update
+            if (lines.isEmpty()) {
+                System.out.println("File is empty.");
+                return;
+            }
+
+            // Iterate through the lines and find the record with the specified TRN
+            boolean updated = false;
+            for (int i = 0; i < lines.size(); i++) {
+                String[] parts = lines.get(i).split(",");
+                try {
+                    int trn = Integer.parseInt(parts[0].trim()); // Assume TRN is in the first column (index 0)
+                    if (trn == trnToUpdate) {
+                        // Update the specified column
+                        if (columnIndex >= 0 && columnIndex < parts.length) {
+                            parts[columnIndex] = newValue;  // Update the column with new value
+                            lines.set(i, String.join(",", parts));  // Join the parts back into a single line
+                            updated = true;
+                        } else {
+                            System.out.println("Invalid column index.");
+                            return;
+                        }
+                        break;
+                    }
+                } catch (NumberFormatException e) {
+                    // Skip lines where the TRN is not a valid number
+                }
+            }
+
+            if (!updated) {
+                System.out.println("Record with TRN " + trnToUpdate + " not found.");
+                return;
+            }
+
+            // Write the updated list of lines to the original file
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+                for (String l : lines) {
+                    writer.write(l);
+                    writer.newLine();
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error updating record: " + e.getMessage());
+        }
+    }
+
     
     //Delete Last Record for Ticket
     private static void deleteLastRecord(String filePath) {
@@ -353,6 +462,7 @@ public class Main {
     
     //Methods for Ticket Class
     
+    
     // Method to load the ticket number from the file
 private static int LoadTicketNum(String filepath) {
         // Create a File object
@@ -375,8 +485,7 @@ private static int LoadTicketNum(String filepath) {
             try {
                 if (file.createNewFile()) {
                     System.out.println("File created: " + file.getName());
-                    // Write initial ticket number (1) to the file
-                    SaveTicketNum(filepath, 1);
+                    SaveCount(filepath, 7);
                 }
             } catch (IOException e) {
                 System.out.println("An error occurred while creating the file.");
@@ -384,24 +493,57 @@ private static int LoadTicketNum(String filepath) {
             }
         }
 
-        return 0; // Return default value if the file was not found or read fails
+        return 7; // Return default value if the file was not found or read fails
     }
 
+private static int LoadPPV(String filepath) {
+    // Create a File object
+    File file = new File(filepath);
+
+    // Check if the file exists
+    if (file.exists()) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filepath))) {
+            // Read the file content (ticket number is expected to be on a single line)
+            String line = reader.readLine();
+            if (line != null) {
+                return Integer.parseInt(line); // Return the ticket number from the file
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while reading the file.");
+            e.printStackTrace();
+        }
+    } else {
+        // If file doesn't exist, create it and initialize the ppv number to 1003
+        try {
+            if (file.createNewFile()) {
+                System.out.println("File created: " + file.getName());
+                
+                SaveCount("ppvCount.txt", 1003);
+            }
+        } catch (IOException e) {
+            System.out.println("An error occurred while creating the file.");
+            e.printStackTrace();
+        }
+    }
+
+    return 1003; // Return default value if the file was not found or read fails
+}
+
     // Method to save the ticket number back to the file
-    private static void SaveTicketNum(String filepath, int ticketNum) {
+    private static void SaveCount(String filepath, int ticketNum) {
         try (FileWriter writer = new FileWriter(filepath)) {
             // Write the ticket number to the file
             writer.write(String.valueOf(ticketNum));
         } catch (IOException e) {
-            System.out.println("An error occurred while saving the ticket number.");
+            System.out.println("An error occurred while saving the counter");
             e.printStackTrace();
         }
     }
     
     
     
-    private static void DefaultTickets(String filePath4, ArrayList<Ticket> parameterList) {
-        File file = new File(filePath4);
+    private static void DefaultTickets(String placeholder, ArrayList<Ticket> parameterList) {
+        File file = new File(placeholder);
 
         // If the file doesn't exist, create it and add default drivers
         try {
@@ -435,7 +577,41 @@ private static int LoadTicketNum(String filepath) {
     
     //Searches Driver Ticket Due Date
     
-    public static void displayRowsWithPastDueDates(String filePath3) {
+    public static void ShowPastDueDates(String filePath3, int trn1) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath3))) {
+            String line;
+
+           
+
+            // Read each line in the file
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+
+                if (parts.length > 6) { // Ensure there are enough columns (TRN, ticketDueDate, ticketPayStatus, etc.)
+                    int trn = Integer.parseInt(parts[0].trim()); // Get TRN from the 1st column (index 0)
+                    String ticketDueDateString = parts[3].trim(); // Get the due date from the 4th column (index 3)
+                    String ticketPayStatus = parts[6].trim(); // Get the ticketPayStatus from the 7th column (index 6)
+
+                    // Filter by TRN
+                    if (trn == trn1) {
+                        LocalDate ticketDueDate = LocalDate.parse(ticketDueDateString);
+
+                        // Check if the ticket is past due and unpaid
+                        if (ticketDueDate.isBefore(LocalDate.now()) && ticketPayStatus.equalsIgnoreCase("Unpaid")) {
+                            System.out.println(line); // Output the matching line
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid data in TRN or numeric fields: " + e.getMessage());
+        }
+    }
+
+    
+public static void ShowAllOutstandingTicket(String filePath3) {
         
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath3))) {
             String line;
@@ -454,7 +630,7 @@ private static int LoadTicketNum(String filepath) {
                         LocalDate ticketDueDate = LocalDate.parse(ticketDueDateString);
                         
                         // Calculate the number of days between the due date and today
-                        if (ticketDueDate.isBefore(LocalDate.now()) && ticketPayStatus.equalsIgnoreCase("Unpaid")) {
+                        if (ticketDueDate.isBefore(LocalDate.now()) && ticketPayStatus.equalsIgnoreCase("Outstanding")) {
             	            System.out.println(line);
                     } 
                 }
@@ -463,6 +639,61 @@ private static int LoadTicketNum(String filepath) {
             System.out.println("Error reading file: " + e.getMessage());
         }
     }
+    
+    
+    private static void DeleteTrn(String filePath, int trnToDelete) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            List<String> lines = new ArrayList<>();
+            String line;
+
+            // Read all lines into a list
+            while ((line = reader.readLine()) != null) {
+                lines.add(line);
+            }
+
+            // If the file is empty, there's nothing to delete
+            if (lines.isEmpty()) {
+                System.out.println("File is empty.");
+                return;
+            }
+
+            boolean recordFound = false;
+            // Iterate through the lines to find the record with the specified TRN
+            for (int i = 0; i < lines.size(); i++) {
+                String[] parts = lines.get(i).split(",");
+                try {
+                    int trn = Integer.parseInt(parts[0].trim()); // Assume TRN is in the first column (index 0)
+                    if (trn == trnToDelete) {
+                        // Remove the record with the matching TRN
+                        lines.remove(i);
+                        recordFound = true;
+                        break; // Stop once the record is found and removed
+                    }
+                } catch (NumberFormatException e) {
+                    // Skip lines where TRN is not a valid number
+                }
+            }
+
+            if (!recordFound) {
+                System.out.println("Record with TRN " + trnToDelete + " not found.");
+                return;
+            }
+
+            // Write the updated list of lines back to the file
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+                for (String l : lines) {
+                    writer.write(l);
+                    writer.newLine();
+                }
+            }
+
+            System.out.println("Record with TRN " + trnToDelete + " has been deleted.");
+
+        } catch (IOException e) {
+            System.out.println("Error deleting record: " + e.getMessage());
+        }
+    }
+
 
     
     
@@ -513,9 +744,62 @@ private static int LoadTicketNum(String filepath) {
 		return fineAmt = 0;
 	}
     
+    private static void ShowAllPendingTickets(){
+    System.out.println("Enter driver trn number: ");
+	trnInput = scan.nextInt();
+	while (String.valueOf(trnInput).length() != 9)
+	  {
+	    System.out.println("TRN must be of length 9 digits. Please try again.");
+	    System.out.println("Enter trn:");
+	    trnInput = scan.nextInt();
+	  }
+		result = searchDriverByTrn("ticket_records.csv", trnInput);
+		if (result != null) 
+		{
+            System.out.println("Found driver record");
+            
+            
+            System.out.println("Searching driver's due tickets...");
+            System.out.println("Driver has unpaid tickets below");
+            ShowPastDueDates(filePath3,trnInput);
+		}
+		else {
+            System.out.println("Driver not found with TRN");
+        }  
+	
+}
+    
+    private static void TIOCSCheckDriverStatus()
+    {
+    	System.out.println("1 - Verify if the Driver has any unpaid tickets past 21 days"
+				+ "\n2 -View all offenders who have outstanding tickets pending"
+				+ "\nEnter an option:");
+				option = scan.nextInt();
+				while (option <=0  || option > 2 )
+				{
+					System.out.println("Invalid Input. Please enter a valid option"
+							+ "Enter an option: ");
+					option = scan.nextInt();
+				}
+				switch (option)
+				{
+				case 1:
+					ShowAllPendingTickets();
+					break;
+				case 2:
+					ShowAllOutstandingTicket(filePath3);
+					
+					break;
+				default:
+					System.out.println("Invalid input");
+					break;
+				}
+    }
+    
+    
     private static void CreateApplication()
     {
-    	
+    	System.out.println("-----Create an Application-----\n");
 
 		Driver applicant = new Driver();
 		Name applicantName = new Name();
@@ -561,11 +845,12 @@ private static int LoadTicketNum(String filepath) {
         
         System.out.println("Enter the applicant's street number: ");
         applicantAddress.setStreetNum(scan.nextInt());
-        scan.nextLine();
-        System.out.println("Enter the applicant's street name");
-        applicantAddress.setStreetName(scan.next());
+        scan.nextLine();  // This clears the buffer after reading the integer
+
+        System.out.println("Enter the applicant's street name: ");
+        applicantAddress.setStreetName(scan.nextLine());
         
-      
+        System.out.println("\n");
         System.out.println("1 - Kingston, 2 - St Andrew, 3 - St Thomas,  4 - Portland, 5 - St Mary,");
         System.out.println("\n6 - St Ann, 7 - Trelawny, 8 - St James, 9 - Hanover, 10 - Westermoreland,");
         System.out.println("\n11 - St Elizabeth, 12 - Manchester, 13 - Clarendon, 14 - St Catherine");
@@ -591,14 +876,15 @@ private static int LoadTicketNum(String filepath) {
         System.out.println("Enter your phone number: ");
         applicant.setContactNum(scan.next());
         
-        System.out.println("Enter your gender: "
-        		+ "Options: Male, Female, or Other");
-        
+        System.out.println("Please enter gender from: ");
+        System.out.println("Options: Male, Female, or Other");
+        System.out.println("Enter a option: ");
         applicant.setGender(scan.next().toUpperCase());
-        while (!applicant.getGender().equals("MALE") && !applicant.getGender().equals("FEMALE") && !applicant.getGender().equals("Other"))
+        while (!applicant.getGender().equals("MALE") && !applicant.getGender().equals("FEMALE") && !applicant.getGender().equals("OTHER"))
         {
-        	System.out.println("Invalid choice. Please enter correct gender from"
-        			+ "\nOptions: Male, Female, or Other");
+        	System.out.println("Invalid choice. Please enter correct gender from:"
+        			+ "\nMale, Female, or Other"
+        			+ "\nEnter a option: ");
         	applicant.setGender(scan.next().toUpperCase());
         }
         
@@ -643,8 +929,34 @@ private static int LoadTicketNum(String filepath) {
             	status = false;
             }
         } else {
-            System.out.println("Permit Approved");
+            System.out.println("Red Plate Permit Approved");
             status = true;
+            //Generates new PPV License to current applicant
+            PPVLicense ppv = new PPVLicense(applicant.getTrn(), ppvLicense, today, today.plusYears(4), applicantAddress.getParish());
+            System.out.println("\nCongratulations");
+            System.out.println("PPV License has been assigned to applicant!");
+            System.out.println("-----PPV License Details-----\n");
+            ppv.toString();
+            
+            
+            try (FileWriter writer = new FileWriter("ppv_records.csv", true)) {
+                writer.append(ppv.toCSV());
+                writer.append("\n");
+            } catch (IOException e) {
+                System.out.println("An error occurred while saving the ppv license.");
+                e.printStackTrace();
+            }
+            
+            ppvNum++;
+            SaveCount("ppvCount.txt", ppvNum);
+            
+            try (FileWriter writer = new FileWriter("driver_records.csv", true)) {
+                writer.append(applicant.toCSV());
+                writer.append("\n");
+            } catch (IOException e) {
+                System.out.println("An error occurred while saving the driver records.");
+                e.printStackTrace();
+            }
         }
         
         
@@ -657,26 +969,25 @@ private static int LoadTicketNum(String filepath) {
         	applicantResult = "Failed";
         }
         
+        System.out.println("-----General Application Details-----");
         System.out.println("Date of Application " + today);
         System.out.println("Applicant Status: " + applicantResult);
+        System.out.println("\n");
+        System.out.println("-----Application Personal Information-----");
         applicant.Info();
-        
-        
-        
+        System.out.println("\n");
+        System.out.println("-----Interview Details-----");
         System.out.println("Police record?:" + policerecord );
         System.out.println("Accident(s)? " + accident);
         System.out.println("Outstanding tickets?:" + outstandingTicket);
-        
-        
+        System.out.println("\n");
     }
-        
-        
-        
-        
     
-    private static void TIOCSAddTicket()
+    
+    private static void UpdateApplication()
     {
-    	System.out.println("Please enter offender trn: ");
+    	System.out.println("-----Edit Applicant Information-----\n");
+    	System.out.println("Please enter applicant trn: ");
 		trnInput = scan.nextInt();
 		while (String.valueOf(trnInput).length() != 9)
 		{
@@ -684,6 +995,148 @@ private static int LoadTicketNum(String filepath) {
 			trnInput = scan.nextInt(); 
 		}
 		result = searchDriverByTrn(filePath2, trnInput);
+		if (result != null) {
+            System.out.println("Found applicant record");
+            System.out.println("Available information to edit below");
+            System.out.println("1 - First Name, 2 - Last Name");
+            System.out.println("Please enter an option:");
+            option = scan.nextInt();
+            while (option <=0 || option > 2)
+            {
+            	System.out.println("Invalid input.");
+            	System.out.println("Available information to edit below");
+                System.out.println("1 - First Name, 2 - Last Name");
+                System.out.println("Please enter an option: ");
+                option = scan.nextInt();
+            }
+           
+            System.out.println("Enter new information: ");
+            newInfo = scan.next();
+            
+            EditInformation("driver_records.csv",trnInput,option,newInfo);
+            System.out.println("Applicant information has successfully changed");
+            
+		}
+		else
+		{
+			System.out.println("Applicant not found");
+		}
+    }
+    
+    
+    private static void DeleteApplication()
+    {
+    	System.out.println("-----Delete Applicant Information-----\n");
+    	System.out.println("Please enter applicant trn: ");
+		trnInput = scan.nextInt();
+		while (String.valueOf(trnInput).length() != 9)
+		{
+			System.out.println("Invalid TRN. TRN must contain 9 digits");
+			trnInput = scan.nextInt(); 
+		}
+		result = searchDriverByTrn(filePath2, trnInput);
+		if (result != null) {
+			System.out.println("Application record found");
+			DeleteTrn("driver_records.csv", trnInput);
+		}
+		else
+		{
+			System.out.println("Applicant record not found");
+		}
+    	
+    }
+       
+    private static void ViewAllDrivingRecords(String X) {
+    	try (BufferedReader reader = new BufferedReader(new FileReader(X))) {
+            String line;
+
+            System.out.println("----- View All PPV Records -----");
+
+            // Read the file line by line
+            while ((line = reader.readLine()) != null) {
+                // Split the line into fields based on a delimiter (e.g., comma)
+                String[] fields = line.split(",");
+
+                // Ensure the expected number of fields are present
+                if (fields.length >= 5) { // Adjusted to suit PPV record structure
+                    System.out.println("TRN: " + fields[0]);
+                    System.out.println("Badge Number: " + fields[1]);
+                    System.out.println("Badge Issue Date: " + fields[2]);
+                    System.out.println("Badge Due Date: " + fields[3]);
+                    System.out.println("Badge Parish: " + fields[4]);
+                    System.out.println("-------------------------");
+                } else {
+                    // Handle malformed lines
+                    System.out.println("Invalid record: " + line);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading the PPV records: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+        
+    private static void ViewDrivingRecord(String filePath, int targetTRN) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+
+            System.out.println("----- Search PPV Record by TRN -----");
+
+            boolean recordFound = false; // Flag to indicate if a matching record is found
+
+            // Read the file line by line
+            while ((line = reader.readLine()) != null) {
+                // Split the line into fields based on a delimiter (e.g., comma)
+                String[] fields = line.split(",");
+
+                // Ensure the expected number of fields are present
+                if (fields.length >= 5) { // Adjusted to suit PPV record structure
+                    int trn = Integer.parseInt(fields[0].trim()); // Assuming TRN is in the first column
+
+                    // Check if the TRN matches the target TRN
+                    if (trn == targetTRN) {
+                        System.out.println("TRN: " + fields[0]);
+                        System.out.println("Badge Number: " + fields[1]);
+                        System.out.println("Badge Issue Date: " + fields[2]);
+                        System.out.println("Badge Due Date: " + fields[3]);
+                        System.out.println("Badge Parish: " + fields[4]);
+                        System.out.println("-------------------------");
+
+                        recordFound = true; // Update flag
+                        break; // Stop searching after finding the first match
+                    }
+                } else {
+                    // Handle malformed lines
+                    System.out.println("Invalid record: " + line);
+                }
+            }
+
+            if (!recordFound) {
+                System.out.println("No PPV record found for TRN: " + targetTRN);
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading the PPV records: " + e.getMessage());
+            e.printStackTrace();
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid TRN format in the file.");
+            e.printStackTrace();
+        }
+    }
+
+    
+        
+    
+    private static void TIOCSAddTicket()
+    {
+    	System.out.println("-----Add Ticket to Offender-----\n");
+    	System.out.println("Please enter offender trn: ");
+		trnInput = scan.nextInt();
+		while (String.valueOf(trnInput).length() != 9)
+		{
+			System.out.println("Invalid TRN. TRN must contain 9 digits");
+			trnInput = scan.nextInt(); 
+		}
+		result = searchDriverByTrn("driver_records.csv", trnInput);
 		if (result != null) {
             System.out.println("Found driver record");
             System.out.println("Please enter offense Code (1-7) to apply to offender:"
@@ -720,7 +1173,7 @@ private static int LoadTicketNum(String filepath) {
                 e.printStackTrace();
             }
             ticketNum++;
-            SaveTicketNum(filePath, ticketNum);
+            SaveCount(filePath, ticketNum);
             }
                
           //Saves the current ticket number to file
@@ -796,61 +1249,18 @@ private static int LoadTicketNum(String filepath) {
     				
     				break;//break statement within inner loop
     			case 2:
+    				
+    				
     				TIOCSViewCurrentTicket();
     				break;//break statement within inner loop
     				
     				
-    			case 3:
-    				//Focus on this lock in
-    				
-    				System.out.println("1 - Verify if the Driver has any unpaid tickets past 21 days"
-    						+ "\n2 -View all offenders who have outstanding tickets pending"
-    						+ "\n3 - View all the outstanding tickets in a specific parish"
-    						+ "\nEnter an option:");
-    						option = scan.nextInt();
-    						while (option <=0  || option > 3 )
-    						{
-    							System.out.println("Invalid Input. Please enter a valid option"
-    									+ "Enter an option: ");
-    							option = scan.nextInt();
-    						}
-    						switch (option)
-    						{
-    						case 1:
-    							System.out.println("Enter driver trn number: ");
-    							trnInput = scan.nextInt();
-    							while (String.valueOf(trnInput).length() != 9)
-    							  {
-    							    System.out.println("TRN must be of length 9 digits. Please try again.");
-    							    System.out.println("Enter trn:");
-    							    trnInput = scan.nextInt();
-    							  }
-    								result = searchDriverByTrn(filePath2, trnInput);
-    								if (result != null) 
-    								{
-    						            System.out.println("Found driver record");
-    						            
-    						            
-    						            System.out.println("Searching driver's due tickets...");
-    						            System.out.println("Driver has unpaid tickets below");
-    						            displayRowsWithPastDueDates(filePath3);
-    								}
-    								else {
-    						            System.out.println("Driver not found with TRN");
-    						        }  
-    							
-    							
-    							break;
-    						case 2:
-    							
-    							break;
-    						case 3:
-    							break;
-    						default:
-    							System.out.println("Invalid input");
-    							break;
-    						}
+    			case 3:    				
+    				TIOCSCheckDriverStatus();
     				break;
+    			case 4:
+					System.out.println("Unfortunately the feature you selected is not available at this time");
+					break;
     				
     				default:
     				System.out.println("Invalid Input");
@@ -873,14 +1283,39 @@ private static int LoadTicketNum(String filepath) {
 			    System.out.println("Enter trn:");
 			    trnInput = scan.nextInt();
 			 }
-    		System.out.println("1 – Check for all past tickets for driver (ascending alphabetical order) "
-    				+ "\n2 – Make online payment for tickets (that are issued but not past due)"
-    				+ "\n3 – Check for past-due tickets. Tickets which have passed the 21 days for payment will reflect a court details. "
-    				+ "\n4 - View ticket(s) that have not passed due based on their TRN"
-    				+ "\n5 – Check where there is a warrant issued and display which police station they should turn themselves in."
-    				+ "Enter an option:");
+			result = searchDriverByTrn("driver_records.csv", trnInput);
+			if (result != null) 
+			{
+				System.out.println("Driver record found");
+				System.out.println("1 – Check for all past tickets for driver (ascending alphabetical order) "
+	    				+ "\n2 – Make online payment for tickets (that are issued but not past due)"
+	    				+ "\n3 – Check for past-due tickets. Tickets which have passed the 21 days for payment will reflect a court details. "
+	    				+ "\n4 - View ticket(s) that have not passed due based on their TRN"
+	    				+ "\n5 – Check where there is a warrant issued and display which police station they should turn themselves in."
+	    				+ "Enter an option:");
+	            option = scan.nextInt();
+	            switch (option)
+	            {
+	            case 1:
+	            	break;
+	            case 2:
+	            	break;
+	            case 3:
+	            	ShowPastDueDates(filePath3,trnInput);
+	            	break;
+	            case 4: 
+	            	
+	            	break;
+	            case 5:
+	            	break;
+	            
+	            }
+			}
+			else
+			{
+				System.out.println("Driver record not found");
+			}
     		
-            option = scan.nextInt();
             
 
             
@@ -922,13 +1357,15 @@ private static int LoadTicketNum(String filepath) {
 			passcode = scan.next();
 			if (passcode.equals(adminPass))
     		{
-				System.out.println("1: Create");
-				System.out.println("2: Update");
-				System.out.println("3: Delete");
-				System.out.println("4: Reject");
-				System.out.println("5: Exit");
+				System.out.println("1: Create an Application");
+				System.out.println("2: Update an Application");
+				System.out.println("3: Delete an Application");
+				System.out.println("4: View a Driver's Driving Records");
+				System.out.println("5: View All Drivers with PPV License");
+				System.out.println("6 - View Applicant outstanding tickets");
+				System.out.println("7: Exit");
 				option = scan.nextInt();
-				while (option <=0  || option > 3 )
+				while (option <=0  || option > 7 )
 				{
 					System.out.println("Invalid Input. Please enter a valid option"
 							+ "Enter an option: ");
@@ -939,6 +1376,57 @@ private static int LoadTicketNum(String filepath) {
 					case 1:
 						CreateApplication();
 					break;
+					case 2:
+						UpdateApplication();
+					break;
+					case 3:
+						DeleteApplication();
+					break;
+					case 4:
+						System.out.println("Enter driver trn number: ");
+						trnInput = scan.nextInt();
+						while (String.valueOf(trnInput).length() != 9)
+						  {
+						    System.out.println("TRN must be of length 9 digits. Please try again.");
+						    System.out.println("Enter trn:");
+						    trnInput = scan.nextInt();
+						  }
+						result = searchDriverByTrn("driver_records.csv", trnInput);
+						if (result != null) 
+						{
+							ViewDrivingRecord("ppv_records.csv",trnInput);
+						}
+						else
+						{
+							System.out.println("Applicant not found");
+						}
+						
+					break;
+					case 5:
+						ViewAllDrivingRecords("ppv_records.csv");
+					break;
+					case 6:
+						System.out.println("Enter driver trn number: ");
+						trnInput = scan.nextInt();
+						while (String.valueOf(trnInput).length() != 9)
+						  {
+						    System.out.println("TRN must be of length 9 digits. Please try again.");
+						    System.out.println("Enter trn:");
+						    trnInput = scan.nextInt();
+						  }
+						result = searchDriverByTrn(filePath2, trnInput);
+						if (result != null) 
+						{
+							ShowPastDueDates(filePath3,trnInput);
+						}
+						else
+						{
+							System.out.println("Applicant not found");
+						}
+					break;
+					case 7:
+						state = false;
+						break;
 					
 				}
 				
@@ -951,10 +1439,11 @@ private static int LoadTicketNum(String filepath) {
     		}
 			else
 			{
-				
+				System.out.println("Invalid password");
 			}
 			break;
 		case 2:
+			
 			break;
 		case 3:
 			state = false;
