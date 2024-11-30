@@ -18,47 +18,46 @@ import java.util.Scanner;
 public class Main {
 	
     // Global variable to hold the ticket number
-    public static int ticketNum = 7;
-    //PPV100000
-    //PPV100001
-    public static int ppvNum = 1003;
-    public static String ppvLicense;
-    public static int option;
-    public static int license;
-    public static String choice;
-    public static String policerecord;
-    public static String accident;
-    public static String outstandingTicket;
-    public static String applicantResult;
-    public static String newInfo;
+    private static int ticketNum = 7;
+    //PPL1003
+    private static int ppvNum = 1003;
+    private static String ppvLicense;
+    private static int option;
+    private static String choice;
+    private static String policerecord;
+    private static String accident;
+    private static String outstandingTicket;
+    private static String applicantResult;
+    private static String newInfo;
     
-    public static int trnInput;
-    public static String parishInput;
-    public static String dobString;
+    private static int trnInput;
+    private static String parishInput;
+    private static String dobString;
     
-    public static String result;
-    public static Scanner scan = new Scanner(System.in);
-    public static String adminPass = "ABC123";
-    public static String passcode;
+    private static String result;
+    private static Scanner scan = new Scanner(System.in);
+    private static String adminPass = "ABC123";
+    private static String passcode;
     //Global variables for ticket
     
-    public static LocalDate today = LocalDate.now();
-    public static LocalDate weeks = today.plusWeeks(3);
-    public static LocalDate courtDateInput = weeks.plusWeeks(1);
-    public static int offenseCodeInput;
-    public static String offenseDescInput;
-    public static int fineAmtInput;
-    public static int totalUnpaidTicInput;
-    public static int totalFineAmtInput;
-    public static boolean warrantInput = false;
-    public static String ticketPayStatusInput = "Unpaid";
-    public static boolean state = true;
+    private static LocalDate today = LocalDate.now();
+    private static LocalDate weeks = today.plusWeeks(3);
+    private static LocalDate courtDateInput = weeks.plusWeeks(1);
+    private static int offenseCodeInput;
+    private static String offenseDescInput;
+    private static int fineAmtInput;
+    private static int totalUnpaidTicInput;
+    private static int totalFineAmtInput;
+    private static boolean warrantInput = false;
+    private static String ticketPayStatusInput = "Unpaid";
+    private static boolean state = true;
+    private static int ticketNumInput;
     
-    public static String filePath5 = "ppv_records.csv";
-    public static String filePath4 = "ppvCount.txt";
-    public static String filePath3 = "ticket_records.csv";
-	public static String filePath2 = "driver_records.csv";
-    public static String filePath = "ticketCount.txt";
+    //private static String filePath5 = "ppv_records.csv";
+    //private static String filePath4 = "ppvCount.txt";
+    private static String filePath3 = "ticket_records.csv";
+	private static String filePath2 = "driver_records.csv";
+    private static String filePath = "ticketCount.txt";
     
 
     public static void main(String[] args) 
@@ -73,7 +72,7 @@ public class Main {
 		Address a1 = new Address(19,"Maldave Avenue","Kingston");
 		Driver driver1 = new Driver(123456789,d1, LocalDate.parse("2000-05-05"),a1, "john.brown@gmail.com", "8768403526", "Male");
 		
-		//Tickets for User 1
+		//Default Tickets for User 1
 		Address t1 = new Address(144,"Maxfield Ave","Kingston");
 		Address t2 = new Address(69,"Public West Building","Kingston");
 		Address t3 = new Address(24,"Sutton Street","Kingston");
@@ -84,13 +83,13 @@ public class Main {
 		Ticket defaultTic1 = new Ticket(123456789, 1, LocalDate.parse("2019-01-01"), LocalDate.parse("2019-01-22"), 1, "Aid And Abet No Driver’s Licence or Permit", 
                 "Outstanding", 15000, LocalDate.parse("2019-01-29") , t1, 0, 
                 0, true);
-		
+		//Paid Tickets would display $0 for fineAmt
 		Ticket defaultTic2 = new Ticket(123456789, 2, LocalDate.parse("2019-06-29"), LocalDate.parse("2019-06-29"), 2, "Aid And Abet Operating Motor Vehicle...", 
-                "Paid", 30000, LocalDate.parse("2019-06-29") , t2, 0, 
+                "Paid", 0, LocalDate.parse("2019-06-29") , t2, 0, 
                 0, false);
-		
+		//Paid Tickets would display $0 for fineAmt
 		Ticket defaultTic3 = new Ticket(123456789, 3, LocalDate.parse("2004-01-01"), LocalDate.parse("2004-01-22"), 3, "Body Protruding", 
-                "Paid", 5000, LocalDate.parse("2004-01-29") , t3, 0, 
+                "Paid", 0, LocalDate.parse("2004-01-29") , t3, 0, 
                 0, false);
 		
 		Ticket defaultTic4 = new Ticket(123456789, 4, LocalDate.parse("2024-11-28"), LocalDate.parse("2024-12-19"), 7, "Carrying dangerous goods without the transport....", 
@@ -144,6 +143,7 @@ public class Main {
         ticketNum = LoadTicketNum("ticketCount.txt");
         ppvNum = LoadPPV("ppvCount.txt");
         
+        //Formats PPV License to represent real life licenses
         ppvLicense = String.format("PL%04d", ppvNum);
         
         
@@ -162,7 +162,7 @@ public class Main {
         	while (state)
             {
         		System.out.println("Welcome to the Jamaica Constabulary Force and Public Passenger Vehicle Association. How may I assist?"
-        				+ "\n1 - Red Plate Licensing System (RPLS)"
+        				+ "\n1 - Red Plate Licensing System (RPLTS)"
         				+ "\n2 - Ticketing Issuing and Offender Checking System (TIOCS)"
         				+ "\n3 - Exit"
         				+ "\nEnter an option:");
@@ -202,7 +202,7 @@ public class Main {
             System.out.println("Thank you for your business. Have a nice day");
             
             
-        }// end of public static void main
+        }// end of private static void main
         
         
   //Methods for PPV License
@@ -575,9 +575,126 @@ private static int LoadPPV(String filepath) {
         }
     }// end DefaultTickets method
     
-    //Searches Driver Ticket Due Date
     
-    public static void ShowPastDueDates(String filePath3, int trn1) {
+    
+    private static void EditFineAmt(String filePath, int searchTrn, int ticketNum, int newFineAmt, String newPaymentStatus) {
+        List<String> lines = new ArrayList<>();
+        boolean updated = false;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+
+            // Read the file line by line and store the lines in a list
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                try {
+                    // Ensure there are enough columns
+                    if (parts.length > 7) {
+                        int trn = Integer.parseInt(parts[0].trim()); // TRN from column 1
+                        int ticket = Integer.parseInt(parts[1].trim()); // TicketNum from column 2
+
+                        // If both TRN and ticketNum match, update fineAmt and payment status
+                        if (trn == searchTrn && ticket == ticketNum) {
+                            parts[7] = String.valueOf(newFineAmt); // Update fineAmt
+                            parts[6] = newPaymentStatus.trim();   // Update payment status
+                            updated = true; // Mark as updated
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Skipping invalid line: " + line);
+                }
+                // Add the (possibly modified) line back to the list
+                lines.add(String.join(",", parts));
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+            return;
+        }
+
+        // Write the updated lines back to the file
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {
+            for (String updatedLine : lines) {
+                writer.write(updatedLine);
+                writer.newLine();
+            }
+        } catch (IOException e) {
+            System.out.println("Error writing to file: " + e.getMessage());
+            return;
+        }
+
+        if (!updated) {
+            System.out.println("No matching record found for TRN: " + searchTrn + " and TicketNum: " + ticketNum);
+        }
+    }
+    //Searches Driver Ticket Due Date
+    private static Integer OnlinePayment(String filePath, int searchTrn, int ticketNum)
+    {
+    	try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+                try {
+                    // Ensure there are enough columns
+                    if (parts.length > 7) {
+                        int trn = Integer.parseInt(parts[0].trim()); // TRN from column 1
+                        int ticket = Integer.parseInt(parts[1].trim()); // TicketNum from column 2
+
+                        // Match both TRN and ticketNum
+                        if (trn == searchTrn && ticket == ticketNum) {
+                            return Integer.parseInt(parts[7].trim()); // fineAmt from column 8
+                        }
+                    }
+                } catch (NumberFormatException e) {
+                    // Skip malformed TRN, ticketNum, or fineAmt
+                    System.out.println("Skipping invalid line: " + line);
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        }
+
+        return null;
+    }
+    
+    private static void PayTicketOnline() {
+	    System.out.println("Please enter the ticket number: ");
+		ticketNumInput = scan.nextInt();
+		if (OnlinePayment("ticket_records.csv", trnInput, ticketNumInput) == null)
+		{
+			System.out.println("Ticket number was not found");
+		}
+		else
+		{
+			if(OnlinePayment("ticket_records.csv", trnInput, ticketNumInput) == 0)
+			{
+				System.out.println("Ticket number " + ticketNumInput + " has been paid already!");
+			}
+			else
+			{
+				System.out.println("The fine amount for ticket is: $" + OnlinePayment("ticket_records.csv", trnInput, ticketNumInput));
+	        	System.out.print("Please enter the fine amount: $");
+	        	fineAmtInput = scan.nextInt();
+	        	
+	        	while (fineAmtInput < OnlinePayment("ticket_records.csv", trnInput, ticketNumInput))
+	        	{
+	        		System.out.println("Invalid input");
+	        		System.out.println("The fine amount for ticket is: $" + OnlinePayment("ticket_records.csv", trnInput, ticketNumInput));
+	        		System.out.println("The fine amount must be greater than or equal to: $" + OnlinePayment("ticket_records.csv", trnInput, ticketNumInput));
+	            	System.out.print("Please enter the fine amount: $");
+	            	fineAmtInput = scan.nextInt();
+	        	}
+	        	EditFineAmt("ticket_records.csv", trnInput, ticketNumInput,0, "Paid");
+	        	
+	        	System.out.println("Ticket number " + ticketNumInput + " has been paid");
+	        	System.out.println("Ticket payment status has changed to Paid");
+			}
+			
+		}
+	
+		
+			}
+    
+    private static void ShowPastDueDates(String filePath3, int trn1) {
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath3))) {
             String line;
 
@@ -609,9 +726,42 @@ private static int LoadPPV(String filepath) {
             System.out.println("Invalid data in TRN or numeric fields: " + e.getMessage());
         }
     }
+    
+    private static void ShowNotPastDueDates(String filePath3, int trn1) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath3))) {
+            String line;
+
+           
+
+            // Read each line in the file
+            while ((line = reader.readLine()) != null) {
+                String[] parts = line.split(",");
+
+                if (parts.length > 6) { // Ensure there are enough columns (TRN, ticketDueDate, ticketPayStatus, etc.)
+                    int trn = Integer.parseInt(parts[0].trim()); // Get TRN from the 1st column (index 0)
+                    String ticketDueDateString = parts[3].trim(); // Get the due date from the 4th column (index 3)
+                    String ticketPayStatus = parts[6].trim(); // Get the ticketPayStatus from the 7th column (index 6)
+
+                    // Filter by TRN
+                    if (trn == trn1) {
+                        LocalDate ticketDueDate = LocalDate.parse(ticketDueDateString);
+
+                        // Check if the ticket is past due and unpaid
+                        if (!ticketDueDate.isBefore(LocalDate.now()) && ticketPayStatus.equalsIgnoreCase("Unpaid")) {
+                            System.out.println(line); // Output the matching line
+                        }
+                    }
+                }
+            }
+        } catch (IOException e) {
+            System.out.println("Error reading file: " + e.getMessage());
+        } catch (NumberFormatException e) {
+            System.out.println("Invalid data in TRN or numeric fields: " + e.getMessage());
+        }
+    }
 
     
-public static void ShowAllOutstandingTicket(String filePath3) {
+private static void ShowAllOutstandingTicket(String filePath3) {
         
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath3))) {
             String line;
@@ -1256,7 +1406,7 @@ public static void ShowAllOutstandingTicket(String filePath3) {
     				
     				
     			case 3:    				
-    				TIOCSCheckDriverStatus();
+    				TIOCSCheckDriverStatus();//break statement within inner loop
     				break;
     			case 4:
 					System.out.println("Unfortunately the feature you selected is not available at this time");
@@ -1294,34 +1444,42 @@ public static void ShowAllOutstandingTicket(String filePath3) {
 	    				+ "\n5 – Check where there is a warrant issued and display which police station they should turn themselves in."
 	    				+ "Enter an option:");
 	            option = scan.nextInt();
+	            //while loop validate the option selected
+	            while (option <=0 || option > 5)
+	            {
+	            	System.out.println("Invalid input.");
+	            	System.out.println("1 – Check for all past tickets for driver (ascending alphabetical order) "
+		    				+ "\n2 – Make online payment for tickets (that are issued but not past due)"
+		    				+ "\n3 – Check for past-due tickets. Tickets which have passed the 21 days for payment will reflect a court details. "
+		    				+ "\n4 - View ticket(s) that have not passed due based on their TRN"
+		    				+ "\n5 – Check where there is a warrant issued and display which police station they should turn themselves in."
+		    				+ "Enter an option:");
+	                option = scan.nextInt();
+	            }
 	            switch (option)
 	            {
 	            case 1:
+	            	//ShowDriverPastTickets(String filePath3, int trn1)
 	            	break;
 	            case 2:
+	            	PayTicketOnline();
 	            	break;
-	            case 3:
-	            	ShowPastDueDates(filePath3,trnInput);
-	            	break;
-	            case 4: 
-	            	
-	            	break;
-	            case 5:
-	            	break;
-	            
-	            }
-			}
-			else
-			{
+				case 3:
+					ShowPastDueDates("ticket_records.csv",trnInput);
+					break;
+				case 4: 
+					ShowNotPastDueDates("ticket_records.csv",trnInput);
+					break;
+				case 5:
+					//ShowWarrant("ticket_records",trnInput);
+					break;
+				
+				}
+				}
+				else
+				{
 				System.out.println("Driver record not found");
-			}
-    		
-            
-
-            
-       
-    
-    		
+				}
     	break;
     	case 3:
     		state = false;
@@ -1430,12 +1588,7 @@ public static void ShowAllOutstandingTicket(String filePath3) {
 					
 				}
 				
-		    	/*System.out.println("1 – Check for all past tickets for driver (ascending alphabetical order) "
-						+ "\n2 – Make online payment for tickets (that are issued but not past due)"
-						+ "\n3 – Check for past-due tickets. Tickets which have passed the 21 days for payment will reflect a court details. "
-						+ "\n4 - View ticket(s) that have not passed due based on their TRN"
-						+ "\n5 – Check where there is a warrant issued and display which police station they should turn themselves in."
-						+ "Enter an option:");*/
+		    	
     		}
 			else
 			{
